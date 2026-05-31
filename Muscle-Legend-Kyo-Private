@@ -2503,8 +2503,8 @@ local _PetsHatch = window:AddTab('Pets Hatch')
 	end);
 
 -- Create Tabs
-local StatsTab = Window:AddTab("Stats")
-local ViewStatsTab = Window:AddTab("View Stats")
+local StatsTab = window:AddTab("Stats")
+local ViewStatsTab = window:AddTab("View Stats")
 
 -- Ensure the initial tab renders active
 StatsTab:Show()
