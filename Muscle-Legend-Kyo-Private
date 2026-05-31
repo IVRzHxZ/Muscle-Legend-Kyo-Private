@@ -2783,18 +2783,34 @@ local ViewLabels = {
     Strength = ViewStatsTab:AddLabel("💪 Strength: 0"),
     Durability = ViewStatsTab:AddLabel("🛡️ Durability: 0"),
     Agility = ViewStatsTab:AddLabel("⚡ Agility: 0"),
-    Kills = ViewStatsTab:AddLabel("💀 Kills: 0"),
-    HitsToKill = ViewStatsTab:AddLabel("⚔️ Hits to Kill: N/A"),
+    Kills = ViewStatsTab:AddLabel("☠️ Kills: 0"),
+    EvilKarma = ViewStatsTab:AddLabel("😈 Evil Karma: 0"),
+    GoodKarma = ViewStatsTab:AddLabel("😇 Good Karma: 0"),
+    HitsToKill = ViewStatsTab:AddLabel("⚔️ Hits to Kill: 0"),
     
     GainedHeader = ViewStatsTab:AddLabel("--- Gained In Server ---"),
     StrengthGained = ViewStatsTab:AddLabel("💪 Strength: 0"),
-    DurabilityGained = ViewStatsTab:AddLabel("🛡️ Durability: 0")
+    DurabilityGained = ViewStatsTab:AddLabel("🛡️ Durability: 0"),
+    EvilKarmaGained = ViewStatsTab:AddLabel("😈 Evil Karma: 0"),
+    GoodKarmaGained = ViewStatsTab:AddLabel("😇 Good Karma: 0")
 }
 
 local function SafeGetStat(player, name)
     if not player then return 0 end
     local ls = player:FindFirstChild("leaderstats")
-    local stat = (ls and ls:FindFirstChild(name)) or player:FindFirstChild(name) or player:FindFirstChild(name:lower())
+    
+    -- Check exact match, lowercase match, and leaderstats variants
+    local stat = (ls and ls:FindFirstChild(name)) 
+        or (ls and ls:FindFirstChild(name:lower()))
+        or player:FindFirstChild(name) 
+        or player:FindFirstChild(name:lower())
+        
+    -- Handle special casing for camelCase setups (e.g., evilKarma / goodKarma)
+    if not stat and (name == "EvilKarma" or name == "GoodKarma") then
+        local camelCase = name:sub(1,1):lower() .. name:sub(2)
+        stat = player:FindFirstChild(camelCase) or (ls and ls:FindFirstChild(camelCase))
+    end
+    
     return stat and stat.Value or 0
 end
 
@@ -2804,7 +2820,9 @@ local function GetTargetInitialStats()
             Strength = SafeGetStat(TargetPlayer, "Strength"),
             Durability = SafeGetStat(TargetPlayer, "Durability"),
             Agility = SafeGetStat(TargetPlayer, "Agility"),
-            Kills = SafeGetStat(TargetPlayer, "Kills")
+            Kills = SafeGetStat(TargetPlayer, "Kills"),
+            EvilKarma = SafeGetStat(TargetPlayer, "EvilKarma"),
+            GoodKarma = SafeGetStat(TargetPlayer, "GoodKarma")
         }
     end
 end
@@ -2817,15 +2835,24 @@ task.spawn(function()
             local curDur = SafeGetStat(TargetPlayer, "Durability")
             local curAgi = SafeGetStat(TargetPlayer, "Agility")
             local curKill = SafeGetStat(TargetPlayer, "Kills")
+            local curEvil = SafeGetStat(TargetPlayer, "EvilKarma")
+            local curGood = SafeGetStat(TargetPlayer, "GoodKarma")
 
+            -- Update Current Totals
             ViewLabels.Strength.Text = "💪 Strength: " .. abbreviateNumber(curStr)
             ViewLabels.Durability.Text = "🛡️ Durability: " .. abbreviateNumber(curDur)
             ViewLabels.Agility.Text = "⚡ Agility: " .. abbreviateNumber(curAgi)
-            ViewLabels.Kills.Text = "💀 Kills: " .. abbreviateNumber(curKill)
+            ViewLabels.Kills.Text = "☠️ Kills: " .. abbreviateNumber(curKill)
+            ViewLabels.EvilKarma.Text = "😈 Evil Karma: " .. abbreviateNumber(curEvil)
+            ViewLabels.GoodKarma.Text = "😇 Good Karma: " .. abbreviateNumber(curGood)
 
+            -- Update Server Gains
             ViewLabels.StrengthGained.Text = "💪 Strength: " .. abbreviateNumber(curStr - (TargetInitialStats.Strength or 0))
             ViewLabels.DurabilityGained.Text = "🛡️ Durability: " .. abbreviateNumber(curDur - (TargetInitialStats.Durability or 0))
+            ViewLabels.EvilKarmaGained.Text = "😈 Evil Karma: " .. abbreviateNumber(curEvil - (TargetInitialStats.EvilKarma or 0))
+            ViewLabels.GoodKarmaGained.Text = "😇 Good Karma: " .. abbreviateNumber(curGood - (TargetInitialStats.GoodKarma or 0))
 
+            -- Combat Calculations
             local myStr = SafeGetStat(LocalPlayer, "Strength")
             local damage = myStr * 0.1
             local hits = (damage <= 0) and "∞" or tostring(math.ceil(curDur / damage))
@@ -2840,7 +2867,6 @@ local ActiveDropdown = nil
 local function PopulateDropdown()
     -- Clear out old UI instances to prevent visual duplicates or locking
     if ActiveDropdown then
-        -- Find the underlying UI frame instance inside Elerium layout and remove it cleanly
         local dropdownFrame = ViewStatsTab:FindFirstChild("Dropdown") or ViewStatsTab:FindFirstChildOfClass("Frame")
         if dropdownFrame then dropdownFrame:Destroy() end
         ActiveDropdown = nil
