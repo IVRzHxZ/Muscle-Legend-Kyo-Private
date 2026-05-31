@@ -644,6 +644,204 @@ end):Set(false)
 _Rocks:AddSwitch('Tiny Rock', function(state)
     ToggleRock('Tiny Rock', 'tiny', state, Vector3.new(23.18409538269043, 20.20000648498535, 24.44658088684082))
 end):Set(false)
+_Rocks:AddLabel('Rocks V2:').TextSize = 22
+	(function(p202)
+		local function u207()
+			local v203, v204, v205 = pairs(game.Players.LocalPlayer.Backpack:GetChildren())
+			while true do
+				local v206
+				v205, v206 = v203(v204, v205)
+				if v205 == nil then
+					break
+				end
+				if v206.Name == 'Punch' and game.Players.LocalPlayer.Character:FindFirstChild('Humanoid') then
+					game.Players.LocalPlayer.Character.Humanoid:EquipTool(v206)
+				end
+			end
+			game:GetService('Players').LocalPlayer.muscleEvent:FireServer('punch', 'leftHand')
+			game:GetService('Players').LocalPlayer.muscleEvent:FireServer('punch', 'rightHand')
+		end
+		local u208 = {
+			['Tiny Rock'] = {
+				Name = 'Tiny Island Rock',
+				Durability = 0,
+			},
+			['Starter Rock'] = {
+				Name = 'Starter Island Rock',
+				Durability = 100,
+			},
+			['Legend Beach Rock'] = {
+				Name = 'Legend Beach Rock',
+				Durability = 5000,
+			},
+			['Frozen Rock'] = {
+				Name = 'Frost Gym Rock',
+				Durability = 150000,
+			},
+			['Mythical Rock'] = {
+				Name = 'Mythical Gym Rock',
+				Durability = 400000,
+			},
+			['Eternal Rock'] = {
+				Name = 'Eternal Gym Rock',
+				Durability = 750000,
+			},
+			['Legend Rock'] = {
+				Name = 'Legend Gym Rock',
+				Durability = 1000000,
+			},
+			['Muscle King Rock'] = {
+				Name = 'Muscle King Gym Rock',
+				Durability = 5000000,
+			},
+			['Jungle Rock'] = {
+				Name = 'Ancient Jungle Rock',
+				Durability = 10000000,
+			},
+		}
+		local u209 = nil
+		local _SelectRock = _Rocks:AddDropdown('Select Rock', function(p210)
+			u209 = p210
+		end)
+		local v212, v213, v214 = pairs(u208)
+		local u215 = u209
+		while true do
+			local v216
+			v214, v216 = v212(v213, v214)
+			if v214 == nil then
+				break
+			end
+			_SelectRock:Add(v214)
+		end
+		_Rocks:AddSwitch('Farm The Rock', function(p217)
+			getgenv().autoFarm = p217
+			task.spawn(function()
+				while getgenv().autoFarm do
+					task.wait()
+					if not (getgenv().autoFarm and u215) then
+						break
+					end
+					local v218 = u208[u215]
+					if v218 and game:GetService('Players').LocalPlayer.Durability.Value >= v218.Durability then
+						local v219, v220, v221 = pairs(game:GetService('Workspace').machinesFolder:GetDescendants())
+						while true do
+							local v222
+							v221, v222 = v219(v220, v221)
+							if v221 == nil then
+								break
+							end
+							if v222.Name == 'neededDurability' and v222.Value == v218.Durability and (game.Players.LocalPlayer.Character:FindFirstChild('LeftHand') and game.Players.LocalPlayer.Character:FindFirstChild('RightHand')) then
+								firetouchinterest(v222.Parent.Rock, game:GetService('Players').LocalPlayer.Character.RightHand, 0)
+								firetouchinterest(v222.Parent.Rock, game:GetService('Players').LocalPlayer.Character.RightHand, 1)
+								firetouchinterest(v222.Parent.Rock, game:GetService('Players').LocalPlayer.Character.LeftHand, 0)
+								firetouchinterest(v222.Parent.Rock, game:GetService('Players').LocalPlayer.Character.LeftHand, 1)
+								u207()
+							end
+						end
+					end
+				end
+			end)
+		end)
+	end)(_Rocks)
+	_Rocks:AddLabel('--------------');
+	(function(p223)
+		local function u228()
+			local v224, v225, v226 = pairs(game.Players.LocalPlayer.Backpack:GetChildren())
+			while true do
+				local v227
+				v226, v227 = v224(v225, v226)
+				if v226 == nil then
+					break
+				end
+				if v227.Name == 'Punch' and game.Players.LocalPlayer.Character:FindFirstChild('Humanoid') then
+					game.Players.LocalPlayer.Character.Humanoid:EquipTool(v227)
+				end
+			end
+			game:GetService('Players').LocalPlayer.muscleEvent:FireServer('punch', 'leftHand')
+			game:GetService('Players').LocalPlayer.muscleEvent:FireServer('punch', 'rightHand')
+		end
+		local u229 = {
+			['Tiny Rock'] = {
+				Name = 'Tiny Island Rock',
+				Durability = 0,
+			},
+			['Starter Rock'] = {
+				Name = 'Starter Island Rock',
+				Durability = 100,
+			},
+			['Legend Beach Rock'] = {
+				Name = 'Legend Beach Rock',
+				Durability = 5000,
+			},
+			['Frozen Rock'] = {
+				Name = 'Frost Gym Rock',
+				Durability = 150000,
+			},
+			['Mythical Rock'] = {
+				Name = 'Mythical Gym Rock',
+				Durability = 400000,
+			},
+			['Eternal Rock'] = {
+				Name = 'Eternal Gym Rock',
+				Durability = 750000,
+			},
+			['Legend Rock'] = {
+				Name = 'Legend Gym Rock',
+				Durability = 1000000,
+			},
+			['Muscle King Rock'] = {
+				Name = 'Muscle King Gym Rock',
+				Durability = 5000000,
+			},
+			['Jungle Rock'] = {
+				Name = 'Ancient Jungle Rock',
+				Durability = 10000000,
+			},
+		}
+		local u230 = nil
+		local _SelectRock2 = _Rocks:AddDropdown('Select Rock', function(p231)
+			u230 = p231
+		end)
+		local v233, v234, v235 = pairs(u229)
+		local u236 = u230
+		while true do
+			local v237
+			v235, v237 = v233(v234, v235)
+			if v235 == nil then
+				break
+			end
+			_SelectRock2:Add(v235)
+		end
+		_Rocks:AddSwitch('Start Farming', function(p238)
+			getgenv().autoFarm = p238
+			task.spawn(function()
+				while getgenv().autoFarm do
+					task.wait()
+					if not (getgenv().autoFarm and u236) then
+						break
+					end
+					local v239 = u229[u236]
+					if v239 and game:GetService('Players').LocalPlayer.Durability.Value >= v239.Durability then
+						local v240, v241, v242 = pairs(game:GetService('Workspace').machinesFolder:GetDescendants())
+						while true do
+							local v243
+							v242, v243 = v240(v241, v242)
+							if v242 == nil then
+								break
+							end
+							if v243.Name == 'neededDurability' and v243.Value == v239.Durability and (game.Players.LocalPlayer.Character:FindFirstChild('LeftHand') and game.Players.LocalPlayer.Character:FindFirstChild('RightHand')) then
+								firetouchinterest(v243.Parent.Rock, game:GetService('Players').LocalPlayer.Character.RightHand, 0)
+								firetouchinterest(v243.Parent.Rock, game:GetService('Players').LocalPlayer.Character.RightHand, 1)
+								firetouchinterest(v243.Parent.Rock, game:GetService('Players').LocalPlayer.Character.LeftHand, 0)
+								firetouchinterest(v243.Parent.Rock, game:GetService('Players').LocalPlayer.Character.LeftHand, 1)
+								u228()
+							end
+						end
+					end
+				end
+			end)
+		end)
+	end)(_Rocks)
 
 -- Create Tabs
 local _Rebirthing = window:AddTab('Rebirthing')
