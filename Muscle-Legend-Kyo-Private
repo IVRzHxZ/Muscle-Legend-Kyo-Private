@@ -2501,457 +2501,185 @@ local _PetsHatch = window:AddTab('Pets Hatch')
 			_ultimatesRemote:InvokeServer('upgradeUltimate', u972)
 		end
 	end);
-	(function(p975)
-		local u976 = {
-			TimeSpent = p975:AddLabel('Elapsed Time: 00:00'),
-			Strength = p975:AddLabel('Strength Gained: 0'),
-			Durability = p975:AddLabel('Durability Gained: 0'),
-			Agility = p975:AddLabel('Agility Gained: 0'),
-			Kills = p975:AddLabel('Kills Gained: 0'),
-			EvilKarma = p975:AddLabel('Evil Karma: 0'),
-			GoodKarma = p975:AddLabel('Good Karma: 0'),
-		}
-		local v977 = {
-			TimeSpent = Color3.fromRGB(255, 255, 255),
-			Strength = Color3.fromRGB(255, 255, 255),
-			Durability = Color3.fromRGB(255, 255, 255),
-			Agility = Color3.fromRGB(255, 255, 255),
-			Kills = Color3.fromRGB(255, 255, 255),
-			EvilKarma = Color3.fromRGB(255, 255, 255),
-			GoodKarma = Color3.fromRGB(255, 255, 255),
-		}
-		local v978, v979, v980 = pairs(u976)
-		local function u982(p981)
-			if p981 >= 1000000000000000 then
-				return string.format('%.1fQa', p981 / 1000000000000000)
-			elseif p981 >= 1000000000000 then
-				return string.format('%.1fT', p981 / 1000000000000)
-			elseif p981 >= 1000000000 then
-				return string.format('%.1fB', p981 / 1000000000)
-			elseif p981 >= 1000000 then
-				return string.format('%.1fM', p981 / 1000000)
-			elseif p981 >= 1000 then
-				return string.format('%.1fK', p981 / 1000)
-			else
-				return tostring(p981)
-			end
-		end
-		while true do
-			local v983
-			v980, v983 = v978(v979, v980)
-			if v980 == nil then
-				break
-			end
-			v983.TextColor3 = v977[v980]
-			v983.TextStrokeTransparency = 0.7
-			v983.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
-			local _UIStroke = Instance.new('UIStroke')
-			_UIStroke.Thickness = 0.5
-			_UIStroke.Color = v977[v980]
-			_UIStroke.Transparency = 0.3
-			_UIStroke.Parent = v983
-		end
-		(function()
-			local _LocalPlayer55 = game.Players.LocalPlayer
-			if _LocalPlayer55 then
-				local _leaderstats4 = _LocalPlayer55:WaitForChild('leaderstats')
-				if _leaderstats4 then
-					local u987 = {
-						Strength = _leaderstats4:WaitForChild('Strength'),
-						Durability = _LocalPlayer55:WaitForChild('Durability'),
-						Agility = _LocalPlayer55:WaitForChild('Agility'),
-						Kills = _leaderstats4:WaitForChild('Kills'),
-						EvilKarma = _LocalPlayer55:WaitForChild('evilKarma'),
-						GoodKarma = _LocalPlayer55:WaitForChild('goodKarma'),
-					}
-					local v988, v989, v990 = pairs(u987)
-					local u991 = {}
-					while true do
-						local v992
-						v990, v992 = v988(v989, v990)
-						if v990 == nil then
-							break
-						end
-						u991[v990] = v992.Value or 0
-					end
-					local u993 = tick()
-					local function v999()
-						local v994, v995, v996 = pairs(u987)
-						while true do
-							local v997
-							v996, v997 = v994(v995, v996)
-							if v996 == nil then
-								break
-							end
-							local v998 = v997.Value - u991[v996]
-							u976[v996].Text = v996 .. ' Gained: ' .. u982(v998)
-						end
-					end
-					local function v1003()
-						local v1000 = tick() - u993
-						local v1001 = math.floor(v1000 / 60)
-						local v1002 = math.floor(v1000 % 60)
-						u976.TimeSpent.Text = string.format('Execution Time: %02d:%02d', v1001, v1002)
-					end
-					local v1004, v1005, v1006 = pairs(u987)
-					while true do
-						local v1007
-						v1006, v1007 = v1004(v1005, v1006)
-						if v1006 == nil then
-							break
-						end
-						v1007.Changed:Connect(v999)
-					end
-					game:GetService('RunService').Heartbeat:Connect(v1003)
-					v999()
-				end
-			else
-				return
-			end
-		end)()
-	end)((window:AddTab('Stats')))
-	local _ViewStats = window:AddTab('View Stats')
-	local u1009 = nil
-	local u1010 = {}
-	local _LocalPlayer56 = game.Players.LocalPlayer
-	local function u1013()
-		if u1009 then
-			local _leaderstats5 = u1009:FindFirstChild('leaderstats')
-			u1010 = {
-				Strength = _leaderstats5 and _leaderstats5:FindFirstChild('Strength') and (_leaderstats5.Strength.Value or 0) or 0,
-				Durability = u1009:FindFirstChild('Durability') and u1009.Durability.Value or 0,
-				Agility = u1009:FindFirstChild('Agility') and u1009.Agility.Value or 0,
-				Rebirths = _leaderstats5 and _leaderstats5:FindFirstChild('Rebirths') and (_leaderstats5.Rebirths.Value or 0) or 0,
-				Kills = _leaderstats5 and (_leaderstats5:FindFirstChild('Kills') and _leaderstats5.Kills.Value) or 0,
-				EvilKarma = u1009:FindFirstChild('evilKarma') and u1009.evilKarma.Value or 0,
-				GoodKarma = u1009:FindFirstChild('goodKarma') and u1009.goodKarma.Value or 0,
-			}
-		end
-	end
-	local u1014 = {
-		ViewStats = _ViewStats:AddLabel('View Stats:'),
-		StrengthLabel = _ViewStats:AddLabel('Strength: 0'),
-		DurabilityLabel = _ViewStats:AddLabel('Durability: 0'),
-		AgilityLabel = _ViewStats:AddLabel('Agility: 0'),
-		RebirthsLabel = _ViewStats:AddLabel('Rebirths: 0'),
-		KillsLabel = _ViewStats:AddLabel('Kills: 0'),
-		EvilKarmaLabel = _ViewStats:AddLabel('Evil Karma: 0'),
-		GoodKarmaLabel = _ViewStats:AddLabel('Good Karma: 0'),
-		HitsToKillLabel = _ViewStats:AddLabel('Hits to Kill: N/A'),
-		StatsGainedLabel = _ViewStats:AddLabel('Stats Gained In Server:'),
-		StrengthGainedLabel = _ViewStats:AddLabel('Strength: 0'),
-		DurabilityGainedLabel = _ViewStats:AddLabel('Durability: 0'),
-		AgilityGainedLabel = _ViewStats:AddLabel('Agility: 0'),
-		RebirthsGainedLabel = _ViewStats:AddLabel('Rebirths: 0'),
-		KillsGainedLabel = _ViewStats:AddLabel('Kills: 0'),
-		EvilKarmaGainedLabel = _ViewStats:AddLabel('Evil Karma: 0'),
-		GoodKarmaGainedLabel = _ViewStats:AddLabel('Good Karma: 0'),
-	}
-	local function u1019()
-		if not (u1009 and _LocalPlayer56) then
-			return 'N/A'
-		end
-		local _Durability2 = u1009:FindFirstChild('Durability')
-		local _leaderstats6 = _LocalPlayer56:FindFirstChild('leaderstats')
-		if _leaderstats6 then
-			_leaderstats6 = _leaderstats6:FindFirstChild('Strength')
-		end
-		if not (_Durability2 and _leaderstats6) then
-			return 'N/A'
-		end
-		local _Value3 = _Durability2.Value
-		local v1018 = _leaderstats6.Value * 0.1
-		return v1018 <= 0 and '\u{221e}' or math.ceil(_Value3 / v1018)
-	end
-	local function u1029()
-		if u1009 then
-			local _leaderstats7 = u1009:FindFirstChild('leaderstats')
-			local _goodKarma5 = u1009:FindFirstChild('goodKarma')
-			local _evilKarma5 = u1009:FindFirstChild('evilKarma')
-			if _leaderstats7 then
-				u1014.StrengthLabel.Text = 'Strength: ' .. abbreviateNumber(_leaderstats7:FindFirstChild('Strength') and (_leaderstats7.Strength.Value or 0) or 0)
-				local v1023 = u1009
-				u1014.DurabilityLabel.Text = 'Durability: ' .. abbreviateNumber(v1023:FindFirstChild('Durability') and u1009.Durability.Value or 0)
-				local v1024 = u1009
-				u1014.AgilityLabel.Text = 'Agility: ' .. abbreviateNumber(v1024:FindFirstChild('Agility') and u1009.Agility.Value or 0)
-				u1014.RebirthsLabel.Text = 'Rebirths: ' .. abbreviateNumber(_leaderstats7:FindFirstChild('Rebirths') and (_leaderstats7.Rebirths.Value or 0) or 0)
-				u1014.KillsLabel.Text = 'Kills: ' .. abbreviateNumber(_leaderstats7:FindFirstChild('Kills') and (_leaderstats7.Kills.Value or 0) or 0)
-			end
-			u1014.EvilKarmaLabel.Text = 'Evil Karma: ' .. abbreviateNumber(_evilKarma5 and _evilKarma5.Value or 0)
-			u1014.GoodKarmaLabel.Text = 'Good Karma: ' .. abbreviateNumber(_goodKarma5 and _goodKarma5.Value or 0)
-			if u1010 then
-				u1014.StrengthGainedLabel.Text = 'Strength: ' .. abbreviateNumber((_leaderstats7 and _leaderstats7:FindFirstChild('Strength') and (_leaderstats7.Strength.Value or 0) or 0) - u1010.Strength)
-				local v1025 = u1009
-				u1014.DurabilityGainedLabel.Text = 'Durability: ' .. abbreviateNumber((v1025:FindFirstChild('Durability') and u1009.Durability.Value or 0) - u1010.Durability)
-				local v1026 = u1009
-				u1014.AgilityGainedLabel.Text = 'Agility: ' .. abbreviateNumber((v1026:FindFirstChild('Agility') and u1009.Agility.Value or 0) - u1010.Agility)
-				u1014.RebirthsGainedLabel.Text = 'Rebirths: ' .. abbreviateNumber((_leaderstats7 and _leaderstats7:FindFirstChild('Rebirths') and (_leaderstats7.Rebirths.Value or 0) or 0) - u1010.Rebirths)
-				u1014.KillsGainedLabel.Text = 'Kills: ' .. abbreviateNumber((_leaderstats7 and (_leaderstats7:FindFirstChild('Kills') and _leaderstats7.Kills.Value) or 0) - u1010.Kills)
-				local v1027 = u1009
-				u1014.EvilKarmaGainedLabel.Text = 'Evil Karma: ' .. abbreviateNumber((v1027:FindFirstChild('evilKarma') and u1009.evilKarma.Value or 0) - u1010.EvilKarma)
-				local v1028 = u1009
-				u1014.GoodKarmaGainedLabel.Text = 'Good Karma: ' .. abbreviateNumber((v1028:FindFirstChild('goodKarma') and u1009.goodKarma.Value or 0) - u1010.GoodKarma)
-			end
-			u1014.HitsToKillLabel.Text = 'Hits to Kill: ' .. tostring(u1019())
-		end
-	end
-	local function u1030()
-		u1014.StrengthLabel.Text = 'Strength: 0'
-		u1014.DurabilityLabel.Text = 'Durability: 0'
-		u1014.AgilityLabel.Text = 'Agility: 0'
-		u1014.RebirthsLabel.Text = 'Rebirths: 0'
-		u1014.KillsLabel.Text = 'Kills: 0'
-		u1014.EvilKarmaLabel.Text = 'Evil Karma: 0'
-		u1014.GoodKarmaLabel.Text = 'Good Karma: 0'
-		u1014.StrengthGainedLabel.Text = 'Strength: 0'
-		u1014.DurabilityGainedLabel.Text = 'Durability: 0'
-		u1014.AgilityGainedLabel.Text = 'Agility: 0'
-		u1014.RebirthsGainedLabel.Text = 'Rebirths: 0'
-		u1014.KillsGainedLabel.Text = 'Kills: 0'
-		u1014.EvilKarmaGainedLabel.Text = 'Evil Karma: 0'
-		u1014.GoodKarmaGainedLabel.Text = 'Good Karma: 0'
-		u1014.HitsToKillLabel.Text = 'Hits to Kill: N/A'
-	end
-	local _SelectPlayer = _ViewStats:AddDropdown('Select Player', function(p1031)
-		local v1032 = game.Players:FindFirstChild(p1031)
-		if v1032 then
-			u1009 = v1032
-			u1013()
-		else
-			u1009 = nil
-			u1030()
-		end
-	end)
-	local v1034, v1035, v1036 = ipairs(game.Players:GetPlayers())
-	local u1037 = u1009
-	while true do
-		local v1038
-		v1036, v1038 = v1034(v1035, v1036)
-		if v1036 == nil then
-			break
-		end
-		_SelectPlayer:Add(v1038.Name)
-	end
-	task.spawn(function()
-		while task.wait(0.1) do
-			if u1037 then
-				u1029()
-			end
-		end
-	end)
-	_ViewStats:AddLabel('---------------')
-	_ViewStats:AddLabel('Stats V2:').TextSize = 22
-	(function(p1039)
-		local _ViewStatsV1 = p1039:AddFolder('ViewStats V1')
-		local _Players6 = game:GetService('Players')
-		local _LocalPlayer57 = _Players6.LocalPlayer
-		local u1043 = {
-			targetPlayer = nil,
-			initialStats = {
-				Strength = 0,
-				Durability = 0,
-				Agility = 0,
-				Rebirths = 0,
-				Kills = 0,
-				EvilKarma = 0,
-				GoodKarma = 0,
-			},
-			emojiMap = {
-				Time = utf8.char(128347),
-				Stats = utf8.char(128202),
-				Strength = utf8.char(128170),
-				Rebirths = utf8.char(128260),
-				Durability = utf8.char(128737),
-				Kills = utf8.char(128128),
-				Agility = utf8.char(127939),
-				EvilKarma = utf8.char(128520),
-				GoodKarma = utf8.char(128519),
-				Brawls = utf8.char(129354),
-			},
-			labels = {},
-		}
-		local function u1047(p1044)
-			if p1044 < 1000 then
-				return tostring(p1044)
-			end
-			local v1045 = math.floor(math.log10(p1044) / 3)
-			local v1046 = p1044 / 10 ^ (v1045 * 3)
-			return string.format('%.1f%s', v1046, ({
-				'K',
-				'M',
-				'B',
-				'T',
-			})[v1045] or '')
-		end
-		local function u1049()
-			if u1043.targetPlayer then
-				local _leaderstats8 = u1043.targetPlayer:FindFirstChild('leaderstats')
-				u1043.initialStats = {
-					Strength = _leaderstats8 and _leaderstats8:FindFirstChild('Strength') and (_leaderstats8.Strength.Value or 0) or 0,
-					Durability = u1043.targetPlayer:FindFirstChild('Durability') and u1043.targetPlayer.Durability.Value or 0,
-					Agility = u1043.targetPlayer:FindFirstChild('Agility') and u1043.targetPlayer.Agility.Value or 0,
-					Rebirths = _leaderstats8 and _leaderstats8:FindFirstChild('Rebirths') and (_leaderstats8.Rebirths.Value or 0) or 0,
-					Kills = _leaderstats8 and (_leaderstats8:FindFirstChild('Kills') and _leaderstats8.Kills.Value) or 0,
-					EvilKarma = u1043.targetPlayer:FindFirstChild('evilKarma') and u1043.targetPlayer.evilKarma.Value or 0,
-					GoodKarma = u1043.targetPlayer:FindFirstChild('goodKarma') and u1043.targetPlayer.goodKarma.Value or 0,
-				}
-			end
-		end
-		local function u1054()
-			if not (u1043.targetPlayer and _LocalPlayer57) then
-				return 'N/A'
-			end
-			local _Durability3 = u1043.targetPlayer:FindFirstChild('Durability')
-			local _leaderstats9 = _LocalPlayer57:FindFirstChild('leaderstats')
-			if _leaderstats9 then
-				_leaderstats9 = _leaderstats9:FindFirstChild('Strength')
-			end
-			if not (_Durability3 and _leaderstats9) then
-				return 'N/A'
-			end
-			local _Value4 = _Durability3.Value
-			local v1053 = _leaderstats9.Value * 0.1
-			return v1053 <= 0 and '\u{221e}' or math.ceil(_Value4 / v1053)
-		end
-		local function u1058()
-			if u1043.targetPlayer then
-				local _leaderstats10 = u1043.targetPlayer:FindFirstChild('leaderstats')
-				local _goodKarma6 = u1043.targetPlayer:FindFirstChild('goodKarma')
-				local _evilKarma6 = u1043.targetPlayer:FindFirstChild('evilKarma')
-				if _leaderstats10 then
-					u1043.labels.StrengthLabel.Text = u1043.emojiMap.Strength .. ' Strength: ' .. u1047(_leaderstats10:FindFirstChild('Strength') and (_leaderstats10.Strength.Value or 0) or 0)
-					u1043.labels.DurabilityLabel.Text = u1043.emojiMap.Durability .. ' Durability: ' .. u1047(u1043.targetPlayer:FindFirstChild('Durability') and u1043.targetPlayer.Durability.Value or 0)
-					u1043.labels.AgilityLabel.Text = u1043.emojiMap.Agility .. ' Agility: ' .. u1047(u1043.targetPlayer:FindFirstChild('Agility') and u1043.targetPlayer.Agility.Value or 0)
-					u1043.labels.RebirthsLabel.Text = u1043.emojiMap.Rebirths .. ' Rebirths: ' .. u1047(_leaderstats10:FindFirstChild('Rebirths') and (_leaderstats10.Rebirths.Value or 0) or 0)
-					u1043.labels.KillsLabel.Text = u1043.emojiMap.Kills .. ' Kills: ' .. u1047(_leaderstats10:FindFirstChild('Kills') and (_leaderstats10.Kills.Value or 0) or 0)
-				end
-				u1043.labels.EvilKarmaLabel.Text = u1043.emojiMap.EvilKarma .. ' Evil Karma: ' .. u1047(_evilKarma6 and _evilKarma6.Value or 0)
-				u1043.labels.GoodKarmaLabel.Text = u1043.emojiMap.GoodKarma .. ' Good Karma: ' .. u1047(_goodKarma6 and _goodKarma6.Value or 0)
-				if u1043.initialStats then
-					u1043.labels.StrengthGainedLabel.Text = u1043.emojiMap.Strength .. ' Strength: ' .. u1047((_leaderstats10 and _leaderstats10:FindFirstChild('Strength') and (_leaderstats10.Strength.Value or 0) or 0) - u1043.initialStats.Strength)
-					u1043.labels.DurabilityGainedLabel.Text = u1043.emojiMap.Durability .. ' Durability: ' .. u1047((u1043.targetPlayer:FindFirstChild('Durability') and u1043.targetPlayer.Durability.Value or 0) - u1043.initialStats.Durability)
-					u1043.labels.AgilityGainedLabel.Text = u1043.emojiMap.Agility .. ' Agility: ' .. u1047((u1043.targetPlayer:FindFirstChild('Agility') and u1043.targetPlayer.Agility.Value or 0) - u1043.initialStats.Agility)
-					u1043.labels.RebirthsGainedLabel.Text = u1043.emojiMap.Rebirths .. ' Rebirths: ' .. u1047((_leaderstats10 and _leaderstats10:FindFirstChild('Rebirths') and (_leaderstats10.Rebirths.Value or 0) or 0) - u1043.initialStats.Rebirths)
-					u1043.labels.KillsGainedLabel.Text = u1043.emojiMap.Kills .. ' Kills: ' .. u1047((_leaderstats10 and (_leaderstats10:FindFirstChild('Kills') and _leaderstats10.Kills.Value) or 0) - u1043.initialStats.Kills)
-					u1043.labels.EvilKarmaGainedLabel.Text = u1043.emojiMap.EvilKarma .. ' Evil Karma: ' .. u1047((u1043.targetPlayer:FindFirstChild('evilKarma') and u1043.targetPlayer.evilKarma.Value or 0) - u1043.initialStats.EvilKarma)
-					u1043.labels.GoodKarmaGainedLabel.Text = u1043.emojiMap.GoodKarma .. ' Good Karma: ' .. u1047((u1043.targetPlayer:FindFirstChild('goodKarma') and u1043.targetPlayer.goodKarma.Value or 0) - u1043.initialStats.GoodKarma)
-				end
-				u1043.labels.HitsToKillLabel.Text = u1043.emojiMap.Kills .. ' Hits to Kill: ' .. tostring(u1054())
-			end
-		end
-		local function u1064()
-			local v1059, v1060, v1061 = pairs(u1043.labels)
-			while true do
-				local v1062
-				v1061, v1062 = v1059(v1060, v1061)
-				if v1061 == nil then
-					break
-				end
-				if v1061 ~= 'ViewStats' and v1061 ~= 'StatsGainedLabel' then
-					local _Gained = v1061:gsub('Label', ''):gsub('Gained', '')
-					v1062.Text = (u1043.emojiMap[_Gained] or '') .. ' ' .. _Gained:gsub('([A-Z])', ' %1'):gsub('^%s*', '') .. ': 0'
-				end
-			end
-			u1043.labels.HitsToKillLabel.Text = u1043.emojiMap.Kills .. ' Hits to Kill: N/A'
-		end
-		local function v1071()
-			local v1065 = u1043
-			local v1066 = {
-				ViewStats = _ViewStatsV1:AddLabel(u1043.emojiMap.Stats .. ' View Stats:'),
-				StrengthLabel = _ViewStatsV1:AddLabel(u1043.emojiMap.Strength .. ' Strength: 0'),
-				DurabilityLabel = _ViewStatsV1:AddLabel(u1043.emojiMap.Durability .. ' Durability: 0'),
-				AgilityLabel = _ViewStatsV1:AddLabel(u1043.emojiMap.Agility .. ' Agility: 0'),
-				RebirthsLabel = _ViewStatsV1:AddLabel(u1043.emojiMap.Rebirths .. ' Rebirths: 0'),
-				KillsLabel = _ViewStatsV1:AddLabel(u1043.emojiMap.Kills .. ' Kills: 0'),
-				EvilKarmaLabel = _ViewStatsV1:AddLabel(u1043.emojiMap.EvilKarma .. ' Evil Karma: 0'),
-				GoodKarmaLabel = _ViewStatsV1:AddLabel(u1043.emojiMap.GoodKarma .. ' Good Karma: 0'),
-				HitsToKillLabel = _ViewStatsV1:AddLabel(u1043.emojiMap.Kills .. ' Hits to Kill: N/A'),
-				StatsGainedLabel = _ViewStatsV1:AddLabel(u1043.emojiMap.Stats .. ' Stats Gained In Server:'),
-				StrengthGainedLabel = _ViewStatsV1:AddLabel(u1043.emojiMap.Strength .. ' Strength: 0'),
-				DurabilityGainedLabel = _ViewStatsV1:AddLabel(u1043.emojiMap.Durability .. ' Durability: 0'),
-				AgilityGainedLabel = _ViewStatsV1:AddLabel(u1043.emojiMap.Agility .. ' Agility: 0'),
-				RebirthsGainedLabel = _ViewStatsV1:AddLabel(u1043.emojiMap.Rebirths .. ' Rebirths: 0'),
-				KillsGainedLabel = _ViewStatsV1:AddLabel(u1043.emojiMap.Kills .. ' Kills: 0'),
-				EvilKarmaGainedLabel = _ViewStatsV1:AddLabel(u1043.emojiMap.EvilKarma .. ' Evil Karma: 0'),
-				GoodKarmaGainedLabel = _ViewStatsV1:AddLabel(u1043.emojiMap.GoodKarma .. ' Good Karma: 0'),
-			}
-			v1065.labels = v1066
-			local v1067, v1068, v1069 = pairs(u1043.labels)
-			while true do
-				local v1070
-				v1069, v1070 = v1067(v1068, v1069)
-				if v1069 == nil then
-					break
-				end
-				v1070.TextSize = 22
-			end
-			u1043.labels.ViewStats.TextColor3 = Color3.fromRGB(255, 215, 0)
-			u1043.labels.StrengthLabel.TextColor3 = Color3.fromRGB(200, 0, 0)
-			u1043.labels.DurabilityLabel.TextColor3 = Color3.fromRGB(0, 128, 255)
-			u1043.labels.AgilityLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-			u1043.labels.RebirthsLabel.TextColor3 = Color3.fromRGB(255, 105, 180)
-			u1043.labels.KillsLabel.TextColor3 = Color3.fromRGB(255, 69, 0)
-			u1043.labels.EvilKarmaLabel.TextColor3 = Color3.fromRGB(128, 0, 128)
-			u1043.labels.GoodKarmaLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
-			u1043.labels.HitsToKillLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
-			u1043.labels.StatsGainedLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
-			u1043.labels.StrengthGainedLabel.TextColor3 = Color3.fromRGB(200, 0, 0)
-			u1043.labels.DurabilityGainedLabel.TextColor3 = Color3.fromRGB(0, 128, 255)
-			u1043.labels.AgilityGainedLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-			u1043.labels.RebirthsGainedLabel.TextColor3 = Color3.fromRGB(255, 105, 180)
-			u1043.labels.KillsGainedLabel.TextColor3 = Color3.fromRGB(255, 69, 0)
-			u1043.labels.EvilKarmaGainedLabel.TextColor3 = Color3.fromRGB(128, 0, 128)
-			u1043.labels.GoodKarmaGainedLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
-		end
-		local v1072 = _ViewStatsV1
-		local u1075 = _ViewStatsV1.AddDropdown(v1072, 'Select Player', function(p1073)
-			local _ = not (p1073 == 'None')
-			local v1074 = _Players6:FindFirstChild(p1073)
-			u1043.targetPlayer = v1074
-			if v1074 then
-				u1049()
-			else
-				u1064()
-			end
-		end)
-		u1075:Add('None')
-		local v1076 = _Players6
-		local v1077, v1078, v1079 = ipairs(_Players6.GetPlayers(v1076))
-		local u1080 = u1064
-		local u1081 = u1043
-		local v1082 = _Players6
-		local u1083 = _LocalPlayer57
-		while true do
-			local v1084
-			v1079, v1084 = v1077(v1078, v1079)
-			if v1079 == nil then
-				break
-			end
-			if v1084 ~= u1083 then
-				u1075:Add(v1084.Name)
-			end
-		end
-		v1082.PlayerAdded:Connect(function(p1085)
-			if p1085 ~= u1083 then
-				u1075:Add(p1085.Name)
-			end
-		end)
-		v1082.PlayerRemoving:Connect(function(p1086)
-			u1075:Remove(p1086.Name)
-			if u1081.targetPlayer and u1081.targetPlayer == p1086 then
-				u1081.targetPlayer = nil
-				u1080()
-			end
-		end)
-		task.spawn(function()
-			while task.wait(0.1) do
-				if u1081.targetPlayer then
-					u1058()
-				end
-			end
-		end)
-		v1071()
-	end)(_ViewStats)
+
+-- Create Tabs
+local StatsTab = Window:AddTab("Stats")
+local ViewStatsTab = Window:AddTab("View Stats")
+
+-- Ensure the initial tab renders active
+StatsTab:Show()
+
+-- Services & Variables
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+-- Number Abbreviation Function
+local function abbreviateNumber(value)
+    if not value then return "0" end
+    if value >= 1e15 then return string.format('%.1fQa', value / 1e15)
+    elseif value >= 1e12 then return string.format('%.1fT', value / 1e12)
+    elseif value >= 1e9 then return string.format('%.1fB', value / 1e9)
+    elseif value >= 1e6 then return string.format('%.1fM', value / 1e6)
+    elseif value >= 1e3 then return string.format('%.1fK', value / 1e3)
+    else return tostring(math.floor(value)) end
+end
+
+--------------------------------------------------------------------------------
+-- TAB 1: PERSONAL STATS TRACKER
+--------------------------------------------------------------------------------
+local PersonalLabels = {
+    TimeSpent = StatsTab:AddLabel("Elapsed Time: 00:00"),
+    Strength = StatsTab:AddLabel("Strength Gained: 0"),
+    Durability = StatsTab:AddLabel("Durability Gained: 0"),
+    Agility = StatsTab:AddLabel("Agility Gained: 0"),
+    Kills = StatsTab:AddLabel("Kills Gained: 0"),
+    EvilKarma = StatsTab:AddLabel("Evil Karma Gained: 0"),
+    GoodKarma = StatsTab:AddLabel("Good Karma Gained: 0")
+}
+
+task.spawn(function()
+    local leaderstats = LocalPlayer:WaitForChild("leaderstats", 10)
+    
+    local strStat = leaderstats and (leaderstats:FindFirstChild("Strength") or leaderstats:FindFirstChild("strength"))
+    local durStat = LocalPlayer:FindFirstChild("Durability") or LocalPlayer:FindFirstChild("durability") or (leaderstats and leaderstats:FindFirstChild("Durability"))
+    local agiStat = LocalPlayer:FindFirstChild("Agility") or LocalPlayer:FindFirstChild("agility") or (leaderstats and leaderstats:FindFirstChild("Agility"))
+    local killStat = leaderstats and (leaderstats:FindFirstChild("Kills") or leaderstats:FindFirstChild("kills"))
+    local evilStat = LocalPlayer:FindFirstChild("evilKarma") or LocalPlayer:FindFirstChild("EvilKarma")
+    local goodStat = LocalPlayer:FindFirstChild("goodKarma") or LocalPlayer:FindFirstChild("GoodKarma")
+
+    local InitialStats = {
+        Strength = strStat and strStat.Value or 0,
+        Durability = durStat and durStat.Value or 0,
+        Agility = agiStat and agiStat.Value or 0,
+        Kills = killStat and killStat.Value or 0,
+        EvilKarma = evilStat and evilStat.Value or 0,
+        GoodKarma = goodStat and goodStat.Value or 0,
+    }
+
+    local startTime = tick()
+
+    RunService.Heartbeat:Connect(function()
+        local elapsed = tick() - startTime
+        local mins = math.floor(elapsed / 60)
+        local secs = math.floor(elapsed % 60)
+        
+        PersonalLabels.TimeSpent.Text = string.format("⏰Elapsed Time: %02d:%02d", mins, secs)
+        PersonalLabels.Strength.Text = "💪Strength Gained: " .. abbreviateNumber((strStat and strStat.Value or 0) - InitialStats.Strength)
+        PersonalLabels.Durability.Text = "🛡️Durability Gained: " .. abbreviateNumber((durStat and durStat.Value or 0) - InitialStats.Durability)
+        PersonalLabels.Agility.Text = "⚡Agility Gained: " .. abbreviateNumber((agiStat and agiStat.Value or 0) - InitialStats.Agility)
+        PersonalLabels.Kills.Text = "☠️Kills Gained: " .. abbreviateNumber((killStat and killStat.Value or 0) - InitialStats.Kills)
+        PersonalLabels.EvilKarma.Text = "😈Evil Karma Gained: " .. abbreviateNumber((evilStat and evilStat.Value or 0) - InitialStats.EvilKarma)
+        PersonalLabels.GoodKarma.Text = "😇Good Karma Gained: " .. abbreviateNumber((goodStat and goodStat.Value or 0) - InitialStats.GoodKarma)
+    end)
+end)
+
+--------------------------------------------------------------------------------
+-- TAB 2: VIEW STATS (OTHER PLAYERS)
+--------------------------------------------------------------------------------
+local TargetPlayer = nil
+local TargetInitialStats = {}
+
+local ViewLabels = {
+    Header = ViewStatsTab:AddLabel("--- Target Player Stats ---"),
+    Strength = ViewStatsTab:AddLabel("💪 Strength: 0"),
+    Durability = ViewStatsTab:AddLabel("🛡️ Durability: 0"),
+    Agility = ViewStatsTab:AddLabel("⚡ Agility: 0"),
+    Kills = ViewStatsTab:AddLabel("💀 Kills: 0"),
+    HitsToKill = ViewStatsTab:AddLabel("⚔️ Hits to Kill: N/A"),
+    
+    GainedHeader = ViewStatsTab:AddLabel("--- Gained In Server ---"),
+    StrengthGained = ViewStatsTab:AddLabel("💪 Strength: 0"),
+    DurabilityGained = ViewStatsTab:AddLabel("🛡️ Durability: 0")
+}
+
+local function SafeGetStat(player, name)
+    if not player then return 0 end
+    local ls = player:FindFirstChild("leaderstats")
+    local stat = (ls and ls:FindFirstChild(name)) or player:FindFirstChild(name) or player:FindFirstChild(name:lower())
+    return stat and stat.Value or 0
+end
+
+local function GetTargetInitialStats()
+    if TargetPlayer then
+        TargetInitialStats = {
+            Strength = SafeGetStat(TargetPlayer, "Strength"),
+            Durability = SafeGetStat(TargetPlayer, "Durability"),
+            Agility = SafeGetStat(TargetPlayer, "Agility"),
+            Kills = SafeGetStat(TargetPlayer, "Kills")
+        }
+    end
+end
+
+-- Continuous Target Monitor Thread
+task.spawn(function()
+    while task.wait(0.2) do
+        if TargetPlayer and TargetPlayer.Parent == Players then
+            local curStr = SafeGetStat(TargetPlayer, "Strength")
+            local curDur = SafeGetStat(TargetPlayer, "Durability")
+            local curAgi = SafeGetStat(TargetPlayer, "Agility")
+            local curKill = SafeGetStat(TargetPlayer, "Kills")
+
+            ViewLabels.Strength.Text = "💪 Strength: " .. abbreviateNumber(curStr)
+            ViewLabels.Durability.Text = "🛡️ Durability: " .. abbreviateNumber(curDur)
+            ViewLabels.Agility.Text = "⚡ Agility: " .. abbreviateNumber(curAgi)
+            ViewLabels.Kills.Text = "💀 Kills: " .. abbreviateNumber(curKill)
+
+            ViewLabels.StrengthGained.Text = "💪 Strength: " .. abbreviateNumber(curStr - (TargetInitialStats.Strength or 0))
+            ViewLabels.DurabilityGained.Text = "🛡️ Durability: " .. abbreviateNumber(curDur - (TargetInitialStats.Durability or 0))
+
+            local myStr = SafeGetStat(LocalPlayer, "Strength")
+            local damage = myStr * 0.1
+            local hits = (damage <= 0) and "∞" or tostring(math.ceil(curDur / damage))
+            ViewLabels.HitsToKill.Text = "⚔️ Hits to Kill: " .. hits
+        end
+    end
+end)
+
+-- Track active dropdown container object
+local ActiveDropdown = nil
+
+local function PopulateDropdown()
+    -- Clear out old UI instances to prevent visual duplicates or locking
+    if ActiveDropdown then
+        -- Find the underlying UI frame instance inside Elerium layout and remove it cleanly
+        local dropdownFrame = ViewStatsTab:FindFirstChild("Dropdown") or ViewStatsTab:FindFirstChildOfClass("Frame")
+        if dropdownFrame then dropdownFrame:Destroy() end
+        ActiveDropdown = nil
+    end
+    
+    -- Create the native Elerium Dropdown clean instance
+    ActiveDropdown = ViewStatsTab:AddDropdown("Select Player", function(selectedName)
+        if selectedName == "None" or not selectedName then
+            TargetPlayer = nil
+            TargetInitialStats = {}
+        else
+            TargetPlayer = Players:FindFirstChild(selectedName)
+            GetTargetInitialStats()
+        end
+    end)
+    
+    -- Add the functional option items using clean library strings
+    ActiveDropdown:Add("None")
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer then 
+            ActiveDropdown:Add(p.Name) 
+        end
+    end
+end
+
+-- Run initialization population
+PopulateDropdown()
+
+-- Listen to player connections to force redraw list elements cleanly
+Players.PlayerAdded:Connect(PopulateDropdown)
+Players.PlayerRemoving:Connect(function(plr)
+    if TargetPlayer == plr then
+        TargetPlayer = nil
+        TargetInitialStats = {}
+    end
+    PopulateDropdown()
+end)
 
 local _Misc = window:AddTab('Misc')
 local _MiscBrawl = _Misc:AddFolder('Misc Brawl')
