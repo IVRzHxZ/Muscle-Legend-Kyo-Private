@@ -516,12 +516,14 @@ end):Set(false)
 local _Rocks = window:AddTab('Rocks')
 _Rocks:Show()
 
+local MyFolder = features:AddFolder("Folder Name")
+
 local u92 = nil
 
 -- ============================================================================
 -- FAST PUNCH FEATURE
 -- ============================================================================
-_Rocks:AddSwitch('Fast Punch', function(p93)
+MyFolder:AddSwitch('Fast Punch', function(p93)
     local _LocalPlayer6 = game.Players.LocalPlayer
     if p93 then
         _G.punchanim = true
@@ -617,31 +619,31 @@ end
 -- ============================================================================
 -- ROCK SELECTIONS
 -- ============================================================================
-_Rocks:AddSwitch('Ancient Jungle Rock', function(state) 
+MyFolder:AddSwitch('Ancient Jungle Rock', function(state) 
     ToggleRock('Ancient Jungle Rock', 'jungle', state, Vector3.new(23.18409538269043, 20.20000648498535, 24.44658088684082)) 
 end):Set(false)
 
-_Rocks:AddSwitch('Muscle King Rock', function(state) 
+MyFolder:AddSwitch('Muscle King Rock', function(state) 
     ToggleRock('Muscle King Mountain', 'muscleking', state, Vector3.new(141.97381591796875, 123.69998931884766, 149.70497131347656)) 
 end):Set(false)
 
-_Rocks:AddSwitch('Rock Of Legends', function(state) 
+MyFolder:AddSwitch('Rock Of Legends', function(state) 
     ToggleRock('Rock Of Legends', 'legends', state, Vector3.new(106.04995727539063, 92.39998626708984, 111.82489013671875)) 
 end):Set(false)
 
-_Rocks:AddSwitch('Inferno Rock', function(state) 
+MyFolder:AddSwitch('Inferno Rock', function(state) 
     ToggleRock('Inferno Rock', 'inferno', state, Vector3.new(50, 45, 50)) 
 end):Set(false)
 
-_Rocks:AddSwitch('Mystic Rock', function(state)
+MyFolder:AddSwitch('Mystic Rock', function(state)
     ToggleRock('Mystic Rock', 'mystic', state, Vector3.new(106.04995727539063, 92.39998626708984, 111.82489013671875))
 end):Set(false)
 
-_Rocks:AddSwitch('Frozen Rock', function(state)
+MyFolder:AddSwitch('Frozen Rock', function(state)
     ToggleRock('Frozen Rock', 'frozen', state, Vector3.new(80.6851577758789, 70.2999496459961, 85.07884979248047))
 end):Set(false)
 
-_Rocks:AddSwitch('Tiny Rock', function(state)
+MyFolder:AddSwitch('Tiny Rock', function(state)
     ToggleRock('Tiny Rock', 'tiny', state, Vector3.new(23.18409538269043, 20.20000648498535, 24.44658088684082))
 end):Set(false)
 _Rocks:AddLabel('Rocks V2:').TextSize = 22
