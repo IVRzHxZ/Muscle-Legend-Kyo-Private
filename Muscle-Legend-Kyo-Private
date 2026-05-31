@@ -8,9 +8,11 @@ local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/IVRzH
 
 local _FarmV1 = window:AddTab('Farm');
 	(function(p245)
-		
+
+local fuck = _FarmV1:AddFolder("Farming Tools")
+
 -- Auto Strength Switch
-_FarmV1:AddSwitch('Auto Lift', function(p30)
+fuck:AddSwitch('Auto Lift', function(p30)
     isAutoStrength = p30
     local _LocalPlayer2 = game.Players.LocalPlayer
     
@@ -32,7 +34,7 @@ _FarmV1:AddSwitch('Auto Lift', function(p30)
     end
 end):Set(false)
 
-		_FarmV1:AddSwitch('Auto Pushups', function(p316)
+		fuck:AddSwitch('Auto Pushups', function(p316)
 			isAutoPushups = p316
 			local _LocalPlayer31 = game.Players.LocalPlayer
 			local _Backpack2 = _LocalPlayer31:FindFirstChild('Backpack')
@@ -53,7 +55,7 @@ end):Set(false)
 				end
 			end
 		end):Set(false)
-		_FarmV1:AddSwitch('Auto Situps', function(p321)
+		fuck:AddSwitch('Auto Situps', function(p321)
 			isAutoSitups = p321
 			local _LocalPlayer32 = game.Players.LocalPlayer
 			local _Backpack3 = _LocalPlayer32:FindFirstChild('Backpack')
@@ -74,7 +76,7 @@ end):Set(false)
 				end
 			end
 		end):Set(false)
-		_FarmV1:AddSwitch('Auto Handstands', function(p326)
+		fuck:AddSwitch('Auto Handstands', function(p326)
 			isAutoHandstands = p326
 			local _LocalPlayer33 = game.Players.LocalPlayer
 			local _Backpack4 = _LocalPlayer33:FindFirstChild('Backpack')
