@@ -516,7 +516,7 @@ end):Set(false)
 local _Rocks = window:AddTab('Rocks')
 _Rocks:Show()
 
-local MyFolder = features:AddFolder("Folder Name")
+local MyFolder = _Rocks:AddFolder("Folder Name")
 
 local u92 = nil
 
