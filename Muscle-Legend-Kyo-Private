@@ -10,6 +10,7 @@ local _FarmV1 = window:AddTab('Farm');
 	(function(p245)
 
 local fuck = _FarmV1:AddFolder("Farming Tools")
+local opfarms = _FarmV1:AddFolder("OP Farming")
 
 -- Auto Strength Switch
 fuck:AddSwitch('Auto Lift', function(p30)
@@ -97,9 +98,7 @@ end):Set(false)
 				end
 			end
 		end):Set(false)
-		_FarmV1:AddLabel('OP Farms:').TextSize = 22
-		local u331 = nil
-		_FarmV1:AddSwitch('Fast Punch [ENABLE]', function(p332)
+		opfarms:AddSwitch('Fast Punch [ENABLE]', function(p332)
 			local _LocalPlayer34 = game.Players.LocalPlayer
 			if p332 then
 				_G.punchanim = true
@@ -149,7 +148,7 @@ end):Set(false)
 			end
 		end)
 
-		_FarmV1:AddSwitch('Fast Farming', function(p341)
+		opfarms:AddSwitch('Fast Farming', function(p341)
     if p341 then
         local _LocalPlayer35 = game.Players.LocalPlayer
         _G.jungleautorock = true
@@ -243,7 +242,7 @@ end):Set(false)
 local punchConnection = nil
 local isCombinedFarm = false
 
-_FarmV1:AddSwitch('Fast Farming V2', function(state)
+opfarms:AddSwitch('Fast Farming V2', function(state)
     isCombinedFarm = state
     _G.punchanim = state
     _G["musclekingautorock"] = state
