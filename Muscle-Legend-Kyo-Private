@@ -1096,72 +1096,79 @@ end)
 
 local _PetsHatch = window:AddTab('Pets Hatch')
 	local _ReplicatedStorage2 = game:GetService('ReplicatedStorage')
-	local u421 = 'Neon Guardian'
-	local _SelectPet = _PetsHatch:AddDropdown('Select Pet', function(p422)
-		u421 = p422
-	end)
-	local u424 = {
-		'Neon Guardian',
-		'Blue Birdie',
-		'Blue Bunny',
-		'Blue Firecaster',
-		'Blue Phoenix',
-		'Crimson Falcon',
-		'Cybernetic Showdown Dragon',
-		'Dark Golem',
-		'Dark Legends Manticore',
-		'Dark Vampy',
-		'Darkstar Hunter',
-		'Eternal Strike Leviathan',
-		'Frostwave Legends Penguin',
-		'Gold Warrior',
-		'Golden Phoenix',
-		'Golden Viking',
-		'Green Butterfly',
-		'Green Firecaster',
-		'Infernal Dragon',
-		'Lightning Strike Phantom',
-		'Magic Butterfly',
-		'Muscle Sensei',
-		'Orange Hedgehog',
-		'Orange Pegasus',
-		'Phantom Genesis Dragon',
-		'Purple Dragon',
-		'Purple Falcon',
-		'Red Dragon',
-		'Red Firecaster',
-		'Red Kitty',
-		'Silver Dog',
-		'Ultimate Supernova Pegasus',
-		'Ultra Birdie',
-		'White Pegasus',
-		'White Phoenix',
-		'Yellow Butterfly',
-	}
-	local v425, v426, v427 = ipairs(u424)
-	local u428 = u421
-	while true do
-		local v429
-		v427, v429 = v425(v426, v427)
-		if v427 == nil then
-			break
-		end
-		_SelectPet:Add(v429)
-	end
-	_PetsHatch:AddSwitch('Auto Open Pet', function(p430)
-		_G.AutoHatchPet = p430
-		if p430 then
-			task.spawn(function()
-				while _G.AutoHatchPet and u428 ~= '' do
-					local v431 = _ReplicatedStorage2.cPetShopFolder:FindFirstChild(u428)
+
+-- Track the selected pet dynamically
+local SelectedPet = 'Neon Guardian'
+
+local u424 = {
+	'Neon Guardian',
+	'Blue Birdie',
+	'Blue Bunny',
+	'Blue Firecaster',
+	'Blue Phoenix',
+	'Crimson Falcon',
+	'Cybernetic Showdown Dragon',
+	'Dark Golem',
+	'Dark Legends Manticore',
+	'Dark Vampy',
+	'Darkstar Hunter',
+	'Eternal Strike Leviathan',
+	'Frostwave Legends Penguin',
+	'Gold Warrior',
+	'Golden Phoenix',
+	'Golden Viking',
+	'Green Butterfly',
+	'Green Firecaster',
+	'Infernal Dragon',
+	'Lightning Strike Phantom',
+	'Magic Butterfly',
+	'Muscle Sensei',
+	'Orange Hedgehog',
+	'Orange Pegasus',
+	'Phantom Genesis Dragon',
+	'Purple Dragon',
+	'Purple Falcon',
+	'Red Dragon',
+	'Red Firecaster',
+	'Red Kitty',
+	'Silver Dog',
+	'Ultimate Supernova Pegasus',
+	'Ultra Birdie',
+	'White Pegasus',
+	'White Phoenix',
+	'Yellow Butterfly',
+}
+
+-- Create dropdown and update SelectedPet when changed
+local _SelectPet = _PetsHatch:AddDropdown('Select Pet', function(p422)
+	SelectedPet = p422
+end)
+
+-- Properly populate the dropdown items
+for _, petName in ipairs(u424) do
+	_SelectPet:Add(petName)
+end
+
+-- Auto Hatch Switch
+_PetsHatch:AddSwitch('Auto Open Pets', function(p430)
+	_G.AutoHatchPet = p430
+	if p430 then
+		task.spawn(function()
+			while _G.AutoHatchPet do
+				-- Ensure a pet is actually selected
+				if SelectedPet and SelectedPet ~= '' then
+					local v431 = _ReplicatedStorage2.cPetShopFolder:FindFirstChild(SelectedPet)
 					if v431 then
 						_ReplicatedStorage2.cPetShopRemote:InvokeServer(v431)
+					else
+						warn("Pet data not found in ReplicatedStorage: " .. tostring(SelectedPet))
 					end
-					task.wait(1)
 				end
-			end)
-		end
-	end)
+				task.wait(1) -- Adjust this delay if you want to hatch faster
+			end
+		end)
+	end
+end)
 	local u432 = 'Blue Aura'
 	local _SelectAura = _PetsHatch:AddDropdown('Select Aura', function(p433)
 		u432 = p433
