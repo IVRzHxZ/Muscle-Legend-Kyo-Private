@@ -7,6 +7,7 @@ local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/IVRzH
 })
 
 local _FarmV1 = window:AddTab('Farm');
+_FarmV1:Show()
 	(function(p245)
 
 local fuck = _FarmV1:AddFolder("Farming Tools")
