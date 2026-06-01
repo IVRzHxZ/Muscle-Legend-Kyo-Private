@@ -647,8 +647,9 @@ end):Set(false)
 MyFolder:AddSwitch('Tiny Rock', function(state)
     ToggleRock('Tiny Rock', 'tiny', state, Vector3.new(23.18409538269043, 20.20000648498535, 24.44658088684082))
 end):Set(false)
+
 _Rocks:AddLabel('Rocks V2:').TextSize = 22
-	local MyFolder = _Rocks:AddFolder("Auto Rocks")
+	local MyFolder = _Rocks:AddFolder("Auto Rocks V2")
 
 -- Global trackers for state management
 _G.ActiveRockFarms = _G.ActiveRockFarms or {}
