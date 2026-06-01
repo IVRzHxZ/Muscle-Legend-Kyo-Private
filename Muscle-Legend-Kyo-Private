@@ -3149,6 +3149,6 @@ features:Show() -- shows the tab
 
 features:AddLabel("Kyo-Private")
 features:AddLabel("Cracked By: Kyo")
-features:AddLabel("---------")
+features:AddLabel("--------------------")
 features:AddLabel("Fuck")
 features:AddLabel("You")
