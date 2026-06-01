@@ -7,7 +7,7 @@ local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/IVRzH
 })
 
 local _FarmV1 = window:AddTab('Farm');
-_FarmV1:Show()
+
 	(function(p245)
 
 local fuck = _FarmV1:AddFolder("Farming Tools")
@@ -3144,4 +3144,11 @@ _MiscV1:AddButton('Stats Changer V1', function()
     end
 end)
 
-	
+local features = window:AddTab("Info") -- Name of tab
+features:Show() -- shows the tab
+
+features:AddLabel("Kyo-Private")
+features:AddLabel("Cracked By: Kyo")
+features:AddLabel("---------")
+features:AddLabel("Fuck")
+features:AddLabel("You")
