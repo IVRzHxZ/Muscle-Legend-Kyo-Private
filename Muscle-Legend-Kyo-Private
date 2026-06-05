@@ -2803,8 +2803,6 @@ end)
 			end
 		end):Set(false)
 	end)(_Killing)
-	_Killing:AddLabel('')
-	_Killing:AddLabel('Buy Paid Version for more options !')
 	local _Ultimates = window:AddTab('Ultimates')
 	_Ultimates:Show()
 	local _ReplicatedStorage5 = game:GetService('ReplicatedStorage')
