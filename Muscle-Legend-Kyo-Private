@@ -6,26 +6,6 @@ local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/IVRzH
 	can_resize = false, -- true or false
 })
 
-task.spawn(function()
-    local imgui = game:GetService("CoreGui"):WaitForChild("imgui", 10)
-    if imgui then
-        while task.wait(0.05) do
-            for _, element in pairs(imgui:GetDescendants()) do
-                -- Gawing Black ang lahat ng main components, bars, at icons
-                if element:IsA("ImageLabel") then
-                    if element.Name:match("Roundify") or element.Name:match("Indicator") or element.Name == "Toggle_2" then
-                        element.ImageColor3 = Color3.fromRGB(40, 40, 40) -- Dark grey/black
-                    else
-                        element.ImageColor3 = Color3.fromRGB(0, 0, 0)
-                    end
-                elseif element:IsA("Frame") or element:IsA("TextButton") then
-                    element.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-                end
-            end
-        end
-    end
-end)
-
 local _FarmV1 = window:AddTab('Farm');
 
 	(function(p245)
