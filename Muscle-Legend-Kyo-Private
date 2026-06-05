@@ -10,6 +10,13 @@ task.spawn(function()
     local imgui = game:GetService("CoreGui"):WaitForChild("imgui", 10)
     if not imgui then return end
 
+    -- 🎨 EDITABLE COLORS (Dito mo baguhin ang kulay ng Background at Tab)
+    local BACKGROUND_COLOR = Color3.fromRGB(50, 50, 50) -- Baguhin mo 'to para sa main UI background
+    local TAB_COLOR = Color3.fromRGB(0, 0, 0)     -- Baguhin mo 'to para sa kulay ng mga Tabs
+
+    -- 🔒 PERMANENTLY LOCKED COLORS (Naka-lock sa Pure Black, huwag nang galawin)
+    local BAR_COLOR = Color3.fromRGB(0, 0, 0)        -- Permanently Pure Black para sa bars at lines
+
     -- Isang function para sa pag-kulay at pag-lock ng kulay ng element
     local function colorAndLockElement(element)
         -- Helper function para i-force ang kulay kahit baguhin ng ImGui script
@@ -25,37 +32,62 @@ task.spawn(function()
             end)
         end
 
-        -- 1. Kulay ng Backgrounds, Buttons, Toggles, at TABS
+        local nameLower = element.Name:lower()
+        
+        -- EXCLUSION CRITERIA: Huwag galawin ang toggle indicators/checkmarks/toggles
+        if nameLower:match("indicator") or nameLower:match("checkmark") or element.Name == "Toggle_2" or nameLower:match("toggle") then
+            return 
+        end
+
+        -- 1. Deteksyon at Pag-kulay sa TABS
+        if nameLower:match("tab") and not nameLower:match("background") and not nameLower:match("frame") then
+            if element:IsA("ImageLabel") or element:IsA("ImageButton") then
+                forceColor("ImageColor3", TAB_COLOR)
+            elseif element:IsA("Frame") or element:IsA("TextButton") or element:IsA("TextBox") then
+                forceColor("BackgroundColor3", TAB_COLOR)
+            end
+            return 
+        end
+
+        -- 2. Pag-lock sa kulay ng BARS at LINES (Laging Pure Black)
+        if nameLower:match("bar") or nameLower:match("line") then
+            if element:IsA("ImageLabel") or element:IsA("ImageButton") then
+                forceColor("ImageColor3", BAR_COLOR)
+            elseif element:IsA("Frame") or element:IsA("TextButton") or element:IsA("TextBox") then
+                forceColor("BackgroundColor3", BAR_COLOR)
+            end
+            return -- Tapos na kulayan ang bar, huwag nang ituloy sa background color block sa ibaba
+        end
+
+        -- 3. Kulay ng Main Backgrounds at Frames
         if element:IsA("ImageLabel") or element:IsA("ImageButton") then
-            -- Kasama na dito ang pag-detect sa mga tab elements
-            if element.Name:match("Roundify") or element.Name:match("Indicator") or element.Name == "Toggle_2" or element.Name:lower():match("background") or element.Name:lower():match("frame") or element.Name:lower():match("tab") then
-                forceColor("ImageColor3", Color3.fromRGB(0, 0, 0)) -- Pure Black background/tab
-            elseif element.Name:match("Bar") or element.Name:lower():match("line") then
-                forceColor("ImageColor3", Color3.fromRGB(40, 40, 40)) -- Dark grey para sa bars
+            if nameLower:match("roundify") or nameLower:match("background") or nameLower:match("frame") then
+                forceColor("ImageColor3", BACKGROUND_COLOR)
             else
                 if element:IsA("ImageButton") then
-                    forceColor("BackgroundColor3", Color3.fromRGB(0, 0, 0))
+                    forceColor("BackgroundColor3", BACKGROUND_COLOR)
                 end
             end
         elseif element:IsA("Frame") or element:IsA("TextButton") or element:IsA("TextBox") then
-            -- Kung ang pangalan ay may 'tab', nala-lock din ito sa black
-            forceColor("BackgroundColor3", Color3.fromRGB(0, 0, 0)) 
+            if nameLower:match("frame") or nameLower:match("background") then
+                forceColor("BackgroundColor3", BACKGROUND_COLOR) 
+            end
         end
         
-        -- 2. Kulay ng mga Text (Inaalis ang asul sa text o active tab headers)
+        -- 4. Kulay ng mga Text (Inaalis ang asul sa text o active tab headers)
         if element:IsA("TextLabel") or element:IsA("TextButton") or element:IsA("TextBox") then
-            if element.TextColor3 == Color3.fromRGB(0, 0, 255) or (element.TextColor3.B > 0.7 and element.TextColor3.R < 0.3) or element.Name:lower():match("tab") then
+            if element.TextColor3 == Color3.fromRGB(0, 0, 255) or (element.TextColor3.B > 0.7 and element.TextColor3.R < 0.3) or nameLower:match("tab") then
                 forceColor("TextColor3", Color3.fromRGB(255, 255, 255)) -- Ginagawang puti ang asul/tab text
             end
         end
         
-        -- 3. Kulay ng SelectionBox o Highlight
+        -- 5. Kulay ng SelectionBox o Highlight
         if element:IsA("SelectionBox") or element:IsA("Highlight") then
             if element:IsA("SelectionBox") then
-                forceColor("Color3", Color3.fromRGB(0, 0, 0))
+                forceColor("Color3", BACKGROUND_COLOR)
             elseif element:IsA("Highlight") then
-                forceColor("FillColor", Color3.fromRGB(0, 0, 0))
-                forceColor("OutlineColor", Color3.fromRGB(40, 40, 40))
+                forceColor("FillColor", BACKGROUND_COLOR)
+                forceColor("OutlineColor", BAR_COLOR) -- Naka-lock din sa black ang outline
             end
         end
     end
