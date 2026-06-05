@@ -6,6 +6,37 @@ local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/IVRzH
 	can_resize = false, -- true or false
 })
 
+-- I-replace mo yung dating code na nilagay natin dito:
+task.spawn(function()
+    local imgui = game:GetService("CoreGui"):WaitForChild("imgui", 10)
+    if imgui then
+        -- Tatakbo ito nang ilang beses habang naglo-load ang mga tab mo
+        for i = 1, 20 do 
+            for _, element in pairs(imgui:GetDescendants()) do
+                -- 1. Ginagawang black ang Top Bar, Base, at Top images
+                if (element.Name == "Bar" and element:IsA("Frame")) or 
+                   (element.Name == "Base" or element.Name == "Top") and element:IsA("ImageLabel") then
+                    element.BackgroundColor3 = Color3.new(0, 0, 0)
+                    if element:IsA("ImageLabel") then element.ImageColor3 = Color3.new(0, 0, 0) end
+                
+                -- 2. Ginagawang black ang Tab Background at Tab Buttons
+                elseif element.Name == "TabSelection" or element.Name == "Tabs" or element.Name == "TabButtons" then
+                    if element:IsA("ImageLabel") then
+                        element.ImageColor3 = Color3.new(0, 0, 0)
+                    elseif element:IsA("Frame") then
+                        element.BackgroundColor3 = Color3.new(0, 0, 0)
+                    end
+                
+                -- 3. Target ang mga inner frames ng tab containers
+                elseif element:IsA("Frame") and (element.Parent.Name == "TabSelection" or element.Parent.Name == "Tabs") then
+                    element.BackgroundColor3 = Color3.new(0, 0, 0)
+                end
+            end
+            task.wait(0.1)
+        end
+    end
+end)
+
 local _FarmV1 = window:AddTab('Farm');
 
 	(function(p245)
