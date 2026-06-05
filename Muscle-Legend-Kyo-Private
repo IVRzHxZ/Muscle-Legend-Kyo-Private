@@ -10,97 +10,98 @@ task.spawn(function()
     local imgui = game:GetService("CoreGui"):WaitForChild("imgui", 10)
     if not imgui then return end
 
-    -- 🎨 EDITABLE COLORS (Dito mo baguhin ang kulay ng Background at Tab)
-    local BACKGROUND_COLOR = Color3.fromRGB(50, 50, 50) -- Baguhin mo 'to para sa main UI background
-    local TAB_COLOR = Color3.fromRGB(0, 0, 0)     -- Baguhin mo 'to para sa kulay ng mga Tabs
+    -- 🎨 EDITABLE COLORS
+    local BACKGROUND_COLOR = Color3.fromRGB(50, 50, 50) 
+    local TAB_COLOR = Color3.fromRGB(0, 0, 0)     
 
-    -- 🔒 PERMANENTLY LOCKED COLORS (Naka-lock sa Pure Black, huwag nang galawin)
-    local BAR_COLOR = Color3.fromRGB(0, 0, 0)        -- Permanently Pure Black para sa bars at lines
+    -- 🔒 PERMANENTLY LOCKED COLORS
+    local BAR_COLOR = Color3.fromRGB(0, 0, 0)        
 
-    -- Isang function para sa pag-kulay at pag-lock ng kulay ng element
+    -- Function para kulayan ang UI nang mabilis at walang lag
     local function colorAndLockElement(element)
-        -- Helper function para i-force ang kulay kahit baguhin ng ImGui script
-        local function forceColor(property, targetColor)
-            if element[property] ~= targetColor then
-                element[property] = targetColor
-            end
-            -- Dito la-lock ang kulay kapag nagbago (gaya ng pag-click sa tab)
-            element:GetPropertyChangedSignal(property):Connect(function()
-                if element[property] ~= targetColor then
-                    element[property] = targetColor
-                end
-            end)
-        end
+        -- Proteksyon para hindi ma-spam o ma-loop ang pag-kulay sa element na nagawa na
+        if element:GetAttribute("UI_Colored") then return end
 
         local nameLower = element.Name:lower()
         
-        -- EXCLUSION CRITERIA: Huwag galawin ang toggle indicators/checkmarks/toggles
+        -- EXCLUSION CRITERIA: Huwag galawin ang toggles at indicators
         if nameLower:match("indicator") or nameLower:match("checkmark") or element.Name == "Toggle_2" or nameLower:match("toggle") then
             return 
+        end
+
+        -- Helper function: Binabago lang ang kulay kung kailangan (Anti-Lag)
+        local function applyColor(property, targetColor)
+            if element[property] ~= targetColor then
+                element[property] = targetColor
+            end
         end
 
         -- 1. Deteksyon at Pag-kulay sa TABS
         if nameLower:match("tab") and not nameLower:match("background") and not nameLower:match("frame") then
             if element:IsA("ImageLabel") or element:IsA("ImageButton") then
-                forceColor("ImageColor3", TAB_COLOR)
+                applyColor("ImageColor3", TAB_COLOR)
             elseif element:IsA("Frame") or element:IsA("TextButton") or element:IsA("TextBox") then
-                forceColor("BackgroundColor3", TAB_COLOR)
+                applyColor("BackgroundColor3", TAB_COLOR)
             end
+            element:SetAttribute("UI_Colored", true)
             return 
         end
 
-        -- 2. Pag-lock sa kulay ng BARS at LINES (Laging Pure Black)
+        -- 2. Pag-lock sa kulay ng BARS at LINES
         if nameLower:match("bar") or nameLower:match("line") then
             if element:IsA("ImageLabel") or element:IsA("ImageButton") then
-                forceColor("ImageColor3", BAR_COLOR)
+                applyColor("ImageColor3", BAR_COLOR)
             elseif element:IsA("Frame") or element:IsA("TextButton") or element:IsA("TextBox") then
-                forceColor("BackgroundColor3", BAR_COLOR)
+                applyColor("BackgroundColor3", BAR_COLOR)
             end
-            return -- Tapos na kulayan ang bar, huwag nang ituloy sa background color block sa ibaba
+            element:SetAttribute("UI_Colored", true)
+            return 
         end
 
         -- 3. Kulay ng Main Backgrounds at Frames
         if element:IsA("ImageLabel") or element:IsA("ImageButton") then
             if nameLower:match("roundify") or nameLower:match("background") or nameLower:match("frame") then
-                forceColor("ImageColor3", BACKGROUND_COLOR)
+                applyColor("ImageColor3", BACKGROUND_COLOR)
             else
                 if element:IsA("ImageButton") then
-                    forceColor("BackgroundColor3", BACKGROUND_COLOR)
+                    applyColor("BackgroundColor3", BACKGROUND_COLOR)
                 end
             end
         elseif element:IsA("Frame") or element:IsA("TextButton") or element:IsA("TextBox") then
             if nameLower:match("frame") or nameLower:match("background") then
-                forceColor("BackgroundColor3", BACKGROUND_COLOR) 
+                applyColor("BackgroundColor3", BACKGROUND_COLOR) 
             end
         end
         
-        -- 4. Kulay ng mga Text (Inaalis ang asul sa text o active tab headers)
+        -- 4. Kulay ng mga Text (Inaalis ang asul)
         if element:IsA("TextLabel") or element:IsA("TextButton") or element:IsA("TextBox") then
             if element.TextColor3 == Color3.fromRGB(0, 0, 255) or (element.TextColor3.B > 0.7 and element.TextColor3.R < 0.3) or nameLower:match("tab") then
-                forceColor("TextColor3", Color3.fromRGB(255, 255, 255)) -- Ginagawang puti ang asul/tab text
+                applyColor("TextColor3", Color3.fromRGB(255, 255, 255))
             end
         end
         
         -- 5. Kulay ng SelectionBox o Highlight
         if element:IsA("SelectionBox") or element:IsA("Highlight") then
             if element:IsA("SelectionBox") then
-                forceColor("Color3", BACKGROUND_COLOR)
+                applyColor("Color3", BACKGROUND_COLOR)
             elseif element:IsA("Highlight") then
-                forceColor("FillColor", BACKGROUND_COLOR)
-                forceColor("OutlineColor", BAR_COLOR) -- Naka-lock din sa black ang outline
+                applyColor("FillColor", BACKGROUND_COLOR)
+                applyColor("OutlineColor", BAR_COLOR)
             end
         end
+
+        -- Markahan ang element para hindi na ulit balikan ng script
+        element:SetAttribute("UI_Colored", true)
     end
 
-    -- Warnasan at kulayan ang mga kasalukuyang elements na nandiyan na agad
+    -- Kulayan ang mga kasalukuyang elements gamit ang task.defer para sa mas swabeng load
     for _, element in pairs(imgui:GetDescendants()) do
-        colorAndLockElement(element)
+        task.defer(colorAndLockElement, element)
     end
 
-    -- Bantayan ang mga bagong pasok na dropdown/toggle/tabs nang walang lag
+    -- Bantayan ang mga bagong pasok (dropdowns/tabs) gamit ang task.defer para iwas FPS drop
     imgui.DescendantAdded:Connect(function(element)
-        task.wait() 
-        colorAndLockElement(element)
+        task.defer(colorAndLockElement, element)
     end)
 end)
 
