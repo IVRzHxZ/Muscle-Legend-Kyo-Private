@@ -8,20 +8,68 @@ local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/IVRzH
 
 task.spawn(function()
     local imgui = game:GetService("CoreGui"):WaitForChild("imgui", 10)
-    if imgui then
-        for _, element in pairs(imgui:GetDescendants()) do
-            -- Gawing Black ang lahat ng main components, bars, at icons
-            if element:IsA("ImageLabel") then
-                if element.Name:match("Roundify") or element.Name:match("Indicator") or element.Name == "Toggle_2" then
-                    element.ImageColor3 = Color3.fromRGB(40, 40, 40) -- Dark grey/black
-                else
-                    element.ImageColor3 = Color3.fromRGB(0, 0, 0)
+    if not imgui then return end
+
+    -- Isang function para sa pag-kulay at pag-lock ng kulay ng element
+    local function colorAndLockElement(element)
+        -- Helper function para i-force ang kulay kahit baguhin ng ImGui script
+        local function forceColor(property, targetColor)
+            if element[property] ~= targetColor then
+                element[property] = targetColor
+            end
+            -- Dito la-lock ang kulay kapag nagbago (gaya ng pag-click sa tab)
+            element:GetPropertyChangedSignal(property):Connect(function()
+                if element[property] ~= targetColor then
+                    element[property] = targetColor
                 end
-            elseif element:IsA("Frame") or element:IsA("TextButton") then
-                element.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+            end)
+        end
+
+        -- 1. Kulay ng Backgrounds, Buttons, Toggles, at TABS
+        if element:IsA("ImageLabel") or element:IsA("ImageButton") then
+            -- Kasama na dito ang pag-detect sa mga tab elements
+            if element.Name:match("Roundify") or element.Name:match("Indicator") or element.Name == "Toggle_2" or element.Name:lower():match("background") or element.Name:lower():match("frame") or element.Name:lower():match("tab") then
+                forceColor("ImageColor3", Color3.fromRGB(0, 0, 0)) -- Pure Black background/tab
+            elseif element.Name:match("Bar") or element.Name:lower():match("line") then
+                forceColor("ImageColor3", Color3.fromRGB(40, 40, 40)) -- Dark grey para sa bars
+            else
+                if element:IsA("ImageButton") then
+                    forceColor("BackgroundColor3", Color3.fromRGB(0, 0, 0))
+                end
+            end
+        elseif element:IsA("Frame") or element:IsA("TextButton") or element:IsA("TextBox") then
+            -- Kung ang pangalan ay may 'tab', nala-lock din ito sa black
+            forceColor("BackgroundColor3", Color3.fromRGB(0, 0, 0)) 
+        end
+        
+        -- 2. Kulay ng mga Text (Inaalis ang asul sa text o active tab headers)
+        if element:IsA("TextLabel") or element:IsA("TextButton") or element:IsA("TextBox") then
+            if element.TextColor3 == Color3.fromRGB(0, 0, 255) or (element.TextColor3.B > 0.7 and element.TextColor3.R < 0.3) or element.Name:lower():match("tab") then
+                forceColor("TextColor3", Color3.fromRGB(255, 255, 255)) -- Ginagawang puti ang asul/tab text
+            end
+        end
+        
+        -- 3. Kulay ng SelectionBox o Highlight
+        if element:IsA("SelectionBox") or element:IsA("Highlight") then
+            if element:IsA("SelectionBox") then
+                forceColor("Color3", Color3.fromRGB(0, 0, 0))
+            elseif element:IsA("Highlight") then
+                forceColor("FillColor", Color3.fromRGB(0, 0, 0))
+                forceColor("OutlineColor", Color3.fromRGB(40, 40, 40))
             end
         end
     end
+
+    -- Warnasan at kulayan ang mga kasalukuyang elements na nandiyan na agad
+    for _, element in pairs(imgui:GetDescendants()) do
+        colorAndLockElement(element)
+    end
+
+    -- Bantayan ang mga bagong pasok na dropdown/toggle/tabs nang walang lag
+    imgui.DescendantAdded:Connect(function(element)
+        task.wait() 
+        colorAndLockElement(element)
+    end)
 end)
 
 local _FarmV1 = window:AddTab('Farm');
