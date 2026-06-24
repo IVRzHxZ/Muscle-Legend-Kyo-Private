@@ -1,9 +1,16 @@
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/IVRzHxZ/Kyo-UI-Library/refs/heads/main/Kyo-UI-LibraryxPrivate", true))()
 
-	local window = library:AddWindow("Kyo-Private-Cracked", {
-	main_color = Color3.fromRGB(0, 0, 0), -- Color
-	min_size = Vector2.new(600, 1000), -- Size of the gui
-	can_resize = false, -- true or false
+	-- Make sure the Players service is available
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Dynamically generate the window title with a welcome message
+local windowTitle = "Kyo-Cracked-Private | Welcome, " .. LocalPlayer.DisplayName
+
+local window = library:AddWindow(windowTitle, {
+    main_color = Color3.fromRGB(41, 74, 122),
+    min_size = Vector2.new(600, 600),
+    can_resize = false
 })
 
 task.spawn(function()
