@@ -31,6 +31,30 @@ task.spawn(function()
 
         local nameLower = element.Name:lower()
         
+        -- 🛑 EMERGENCY DROPDOWN PROTECTION CRITERIA
+        local isDropdownElement = nameLower:match("dropdown") or nameLower:match("box") or nameLower:match("objects")
+
+        -- 🛠️ ELERIUM V2 FIXED FOLDER TRANSPARENCY EXCLUSION
+        local isFolderElement = nameLower:match("folder") or (element.Parent and element.Parent.Name:lower():match("folder"))
+        
+        if isFolderElement and not isDropdownElement then
+            -- Gawing invisible ang background at images ng mismong Folder structure
+            if element:IsA("Frame") or element:IsA("TextButton") or element:IsA("TextBox") then
+                element.BackgroundTransparency = 1
+            elseif element:IsA("ImageLabel") or element:IsA("ImageButton") then
+                element.ImageTransparency = 1
+            end
+            
+            -- Siguraduhing litaw pa rin ang pangalan ng Folder at mga options sa loob nito
+            if element:IsA("TextLabel") or element:IsA("TextButton") or element:IsA("TextBox") then
+                element.TextTransparency = 0
+                element.TextColor3 = Color3.fromRGB(255, 255, 255) -- Gawing Puti para mababasa pa rin
+            end
+
+            element:SetAttribute("UI_Colored", true)
+            return -- I-break kaagad para hindi na makulayan ng gray/black sa baba
+        end
+
         -- EXCLUSION CRITERIA: Huwag galawin ang toggles at indicators
         if nameLower:match("indicator") or nameLower:match("checkmark") or element.Name == "Toggle_2" or nameLower:match("toggle") then
             return 
