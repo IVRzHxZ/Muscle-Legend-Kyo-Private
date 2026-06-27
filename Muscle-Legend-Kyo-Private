@@ -1,5 +1,5 @@
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/IVRzHxZ/Kyo-UI-Library/refs/heads/main/Kyo-UI-LibraryxPrivate", true))()
-
+ 
 	-- Make sure the Players service is available
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -17,6 +17,8 @@ task.spawn(function()
     local imgui = game:GetService("CoreGui"):WaitForChild("imgui", 10)
     if not imgui then return end
 
+    local RunService = game:GetService("RunService")
+
     -- 🎨 EDITABLE COLORS
     local BACKGROUND_COLOR = Color3.fromRGB(100, 100, 100) 
     local TAB_COLOR = Color3.fromRGB(0, 0, 0)     
@@ -24,9 +26,11 @@ task.spawn(function()
     -- 🔒 PERMANENTLY LOCKED COLORS
     local BAR_COLOR = Color3.fromRGB(0, 0, 0)        
 
-    -- Function para kulayan ang UI nang mabilis at walang lag
+    -- Function to color elements cleanly without lag
     local function colorAndLockElement(element)
-        -- Proteksyon para hindi ma-spam o ma-loop ang pag-kulay sa element na nagawa na
+        if not element or not element.Parent then return end
+        
+        -- Instant exit if already processed (Prevents lag during frame updates)
         if element:GetAttribute("UI_Colored") then return end
 
         local nameLower = element.Name:lower()
@@ -38,36 +42,33 @@ task.spawn(function()
         local isFolderElement = nameLower:match("folder") or (element.Parent and element.Parent.Name:lower():match("folder"))
         
         if isFolderElement and not isDropdownElement then
-            -- Gawing invisible ang background at images ng mismong Folder structure
             if element:IsA("Frame") or element:IsA("TextButton") or element:IsA("TextBox") then
                 element.BackgroundTransparency = 1
             elseif element:IsA("ImageLabel") or element:IsA("ImageButton") then
                 element.ImageTransparency = 1
             end
             
-            -- Siguraduhing litaw pa rin ang pangalan ng Folder at mga options sa loob nito
             if element:IsA("TextLabel") or element:IsA("TextButton") or element:IsA("TextBox") then
                 element.TextTransparency = 0
-                element.TextColor3 = Color3.fromRGB(255, 255, 255) -- Gawing Puti para mababasa pa rin
+                element.TextColor3 = Color3.fromRGB(255, 255, 255)
             end
 
             element:SetAttribute("UI_Colored", true)
-            return -- I-break kaagad para hindi na makulayan ng gray/black sa baba
+            return
         end
 
-        -- EXCLUSION CRITERIA: Huwag galawin ang toggles at indicators
+        -- EXCLUSION CRITERIA: Skip toggles and indicators
         if nameLower:match("indicator") or nameLower:match("checkmark") or element.Name == "Toggle_2" or nameLower:match("toggle") then
             return 
         end
 
-        -- Helper function: Binabago lang ang kulay kung kailangan (Anti-Lag)
         local function applyColor(property, targetColor)
             if element[property] ~= targetColor then
                 element[property] = targetColor
             end
         end
 
-        -- 1. Deteksyon at Pag-kulay sa TABS
+        -- 1. Color TABS
         if nameLower:match("tab") and not nameLower:match("background") and not nameLower:match("frame") then
             if element:IsA("ImageLabel") or element:IsA("ImageButton") then
                 applyColor("ImageColor3", TAB_COLOR)
@@ -78,7 +79,7 @@ task.spawn(function()
             return 
         end
 
-        -- 2. Pag-lock sa kulay ng BARS at LINES
+        -- 2. Color BARS and LINES
         if nameLower:match("bar") or nameLower:match("line") then
             if element:IsA("ImageLabel") or element:IsA("ImageButton") then
                 applyColor("ImageColor3", BAR_COLOR)
@@ -89,7 +90,7 @@ task.spawn(function()
             return 
         end
 
-        -- 3. Kulay ng Main Backgrounds at Frames
+        -- 3. Color Main Backgrounds and Frames
         if element:IsA("ImageLabel") or element:IsA("ImageButton") then
             if nameLower:match("roundify") or nameLower:match("background") or nameLower:match("frame") then
                 applyColor("ImageColor3", BACKGROUND_COLOR)
@@ -104,14 +105,15 @@ task.spawn(function()
             end
         end
         
-        -- 4. Kulay ng mga Text (Inaalis ang asul)
+        -- 4. Color Texts (Forcing Elerium V2 theme color removal)
         if element:IsA("TextLabel") or element:IsA("TextButton") or element:IsA("TextBox") then
-            if element.TextColor3 == Color3.fromRGB(0, 0, 255) or (element.TextColor3.B > 0.7 and element.TextColor3.R < 0.3) or nameLower:match("tab") then
+            local txtColor = element.TextColor3
+            if txtColor == Color3.fromRGB(0, 0, 255) or (txtColor.B > 0.6 and txtColor.R < 0.4) or nameLower:match("tab") then
                 applyColor("TextColor3", Color3.fromRGB(255, 255, 255))
             end
         end
         
-        -- 5. Kulay ng SelectionBox o Highlight
+        -- 5. SelectionBox / Highlight Coloring
         if element:IsA("SelectionBox") or element:IsA("Highlight") then
             if element:IsA("SelectionBox") then
                 applyColor("Color3", BACKGROUND_COLOR)
@@ -121,18 +123,20 @@ task.spawn(function()
             end
         end
 
-        -- Markahan ang element para hindi na ulit balikan ng script
         element:SetAttribute("UI_Colored", true)
     end
 
-    -- Kulayan ang mga kasalukuyang elements gamit ang task.defer para sa mas swabeng load
-    for _, element in pairs(imgui:GetDescendants()) do
-        task.defer(colorAndLockElement, element)
-    end
-
-    -- Bantayan ang mga bagong pasok (dropdowns/tabs) gamit ang task.defer para iwas FPS drop
-    imgui.DescendantAdded:Connect(function(element)
-        task.defer(colorAndLockElement, element)
+    -- Real-time rendering listener that bypasses Delta's event restrictions completely
+    local connection
+    connection = RunService.RenderStepped:Connect(function()
+        if not imgui or not imgui.Parent then 
+            connection:Disconnect() 
+            return 
+        end
+        
+        for _, element in ipairs(imgui:GetDescendants()) do
+            colorAndLockElement(element)
+        end
     end)
 end)
 
