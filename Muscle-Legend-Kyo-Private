@@ -14,12 +14,47 @@ local window = library:AddWindow(windowTitle, {
 })
 
 task.spawn(function()
-    -- 🔍 LOCATE ELERIUM V2 SCREEN (Targets common Elerium V2 names or falls back to 'imgui')
-    local imgui = game:GetService("CoreGui"):WaitForChild("Elerium", 5) or 
-                  game:GetService("CoreGui"):WaitForChild("Elerium Library", 5) or 
-                  game:GetService("CoreGui"):WaitForChild("imgui", 5)
+    -- 🔑 DELTA EXECUTOR COMPATIBILITY LAYER
+    local targetStorage = nil
+    
+    -- Subukan hanapin kung nasaan nakatago ang UI (gethui, CoreGui, o PlayerGui)
+    if typeof(gethui) == "function" then
+        targetStorage = gethui()
+    else
+        targetStorage = game:GetService("CoreGui")
+    end
+
+    -- 🔍 LOCATE ELERIUM V2 (Loop hanggang mahanap ang parent folder sa Delta)
+    local imgui = nil
+    local possibleNames = {"Elerium", "Elerium Library", "imgui", "Library"}
+    
+    for _, name in ipairs(possibleNames) do
+        local found = targetStorage:FindFirstChild(name)
+        if found then
+            imgui = found
+            break
+        end
+    end
+    
+    -- Kung hindi makita sa CoreGui/gethui, silipin ang PlayerGui bilang fallback
+    if not imgui then
+        local localPlayer = game:GetService("Players").LocalPlayer
+        if localPlayer then
+            local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
+            for _, name in ipairs(possibleNames) do
+                local found = playerGui:FindFirstChild(name)
+                if found then
+                    imgui = found
+                    break
+                end
+            end
+        end
+    end
                   
-    if not imgui then return end
+    if not imgui then 
+        warn("Delta Bypass: Elerium UI structure could not be found.")
+        return 
+    end
 
     -- 🎨 EDITABLE COLORS
     local BACKGROUND_COLOR = Color3.fromRGB(100, 100, 100) 
@@ -92,7 +127,7 @@ task.spawn(function()
             return 
         end
 
-        -- 3. Kulay ng Main Backgrounds at Frames (Handles Elerium UI specific naming)
+        -- 3. Kulay ng Main Backgrounds at Frames
         if element:IsA("ImageLabel") or element:IsA("ImageButton") then
             if nameLower:match("roundify") or nameLower:match("background") or nameLower:match("frame") or nameLower:match("main") then
                 applyColor("ImageColor3", BACKGROUND_COLOR)
@@ -107,7 +142,7 @@ task.spawn(function()
             end
         end
         
-        -- 4. Kulay ng mga Text (Inaalis ang original Elerium Blue theme color)
+        -- 4. Kulay ng mga Text
         if element:IsA("TextLabel") or element:IsA("TextButton") or element:IsA("TextBox") then
             if element.TextColor3 == Color3.fromRGB(0, 0, 255) or (element.TextColor3.B > 0.6 and element.TextColor3.R < 0.4) or nameLower:match("tab") then
                 applyColor("TextColor3", Color3.fromRGB(255, 255, 255))
@@ -127,7 +162,7 @@ task.spawn(function()
         element:SetAttribute("UI_Colored", true)
     end
 
-    -- Run theme changes smoothly
+    -- Swabeng scanning at dynamic updates na akma sa Delta execution pipeline
     for _, element in ipairs(imgui:GetDescendants()) do
         task.defer(colorAndLockElement, element)
     end
