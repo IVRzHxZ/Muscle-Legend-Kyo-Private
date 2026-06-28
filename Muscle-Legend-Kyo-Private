@@ -293,7 +293,7 @@ end):Set(false)
                 local _Rock14 = game.Workspace.machinesFolder:FindFirstChild('Ancient Jungle Rock') and game.Workspace.machinesFolder['Ancient Jungle Rock']:FindFirstChild('Rock')
                 
                 if _Rock14 and _LeftHand8 then
-                    _Rock14.Size = Vector3.new(2, 1, 1)
+                    _Rock14.Size = Vector3.new(12, 12, 12)
                     _Rock14.Transparency = 1
                     _Rock14.CanCollide = false
                     
@@ -392,7 +392,7 @@ opfarms:AddSwitch('Fast Farming V2', function(state)
         pcall(function()
             local _Rock = game.Workspace.machinesFolder:FindFirstChild('Muscle King Mountain'):FindFirstChild('Rock')
             if _Rock then
-                _Rock.Size = Vector3.new(2, 1, 1)
+                _Rock.Size = Vector3.new(12, 12, 12)
                 _Rock.Transparency = 1
                 _Rock.CanCollide = false
                 
@@ -688,19 +688,41 @@ MyFolder:AddSwitch('Fast Punch', function(p93)
 end):Set(false)
 
 -- Centralized Function to Handle All Rock Farms Safely
-local function ToggleRock(machineFolderName, configName, enabled, originalSize)
+local function ToggleRock(keywordName, configName, enabled, originalSize, staticSpawnCFrame, isExactName)
     _G[configName .. "autorock"] = enabled
     
     if enabled then
         task.spawn(function()
             local _LocalPlayer = game.Players.LocalPlayer
+            
             while _G[configName .. "autorock"] do
                 local char = _LocalPlayer.Character
                 local _LeftHand = char and char:FindFirstChild('LeftHand')
-                local _Rock = game.Workspace.machinesFolder:FindFirstChild(machineFolderName) and game.Workspace.machinesFolder[machineFolderName]:FindFirstChild('Rock')
+                
+                -- Dynamic search system with strict matching validation
+                local targetFolder = nil
+                local machines = game.Workspace:FindFirstChild("machinesFolder")
+                if machines then
+                    for _, child in ipairs(machines:GetChildren()) do
+                        if isExactName then
+                            -- FIXED: Gagamit ng exact match para hindi magkapalit ang Golden at Punching
+                            if child.Name == keywordName then
+                                targetFolder = child
+                                break
+                            end
+                        else
+                            if string.find(string.lower(child.Name), string.lower(keywordName)) then
+                                targetFolder = child
+                                break
+                            end
+                        end
+                    end
+                end
+                
+                local _Rock = targetFolder and targetFolder:FindFirstChild('Rock')
                 
                 if _Rock and _LeftHand then
-                    _Rock.Size = Vector3.new(2, 1, 1)
+                    _Rock.Size = Vector3.new(12, 12, 12)
                     _Rock.Transparency = 1
                     _Rock.CanCollide = false
                     
@@ -717,32 +739,50 @@ local function ToggleRock(machineFolderName, configName, enabled, originalSize)
                         if effect then effect:Destroy() end
                     end
                     
-                    -- Snap rock directly to your left hand assembly
+                    -- Loops and brings the rock directly to your left hand wherever you stand
                     _Rock.CFrame = _LeftHand.CFrame
                 else
-                    warn(machineFolderName .. " or LeftHand structure missing.")
+                    warn("Machine folder containing keyword '" .. keywordName .. "' or LeftHand missing.")
                 end
-                task.wait(0.01) -- Block physics threading crashes
+                task.wait(0.01) -- Quick loop interval for clean loop-bring snapping
             end
         end)
     else
-        -- Clean reset state logic
+        -- Clean reset state logic using the same strict scanning method
         pcall(function()
-            local _Rock = game.Workspace.machinesFolder:FindFirstChild(machineFolderName):FindFirstChild('Rock')
+            local targetFolder = nil
+            local machines = game.Workspace:FindFirstChild("machinesFolder")
+            if machines then
+                for _, child in ipairs(machines:GetChildren()) do
+                    if isExactName then
+                        if child.Name == keywordName then
+                            targetFolder = child
+                            break
+                        end
+                    else
+                        if string.find(string.lower(child.Name), string.lower(keywordName)) then
+                            targetFolder = child
+                            break
+                        end
+                    end
+                end
+            end
+            
+            local _Rock = targetFolder and targetFolder:FindFirstChild('Rock')
             if _Rock then
                 if _Rock:FindFirstChild('rockGui') then
                     for _, guiItem in ipairs(_Rock.rockGui:GetChildren()) do
                         pcall(function() guiItem.Visible = true end)
                     end
                 end
-                _Rock.CanCollide = true
-                _Rock.Transparency = 0
+                _Rock.CanCollide = false
+                _Rock.Transparency = 1
                 _Rock.Size = originalSize
                 if _Rock:FindFirstChild('originalPosition') then 
                     _Rock.CFrame = CFrame.new(_Rock.originalPosition.Value) 
+                elseif staticSpawnCFrame then
+                    _Rock.CFrame = staticSpawnCFrame
                 end
-            else
-                warn(machineFolderName .. " not found to revert properties.")
             end
         end)
     end
@@ -752,35 +792,41 @@ end
 -- ROCK SELECTIONS
 -- ============================================================================
 MyFolder:AddSwitch('Ancient Jungle Rock', function(state) 
-    ToggleRock('Ancient Jungle Rock', 'jungle', state, Vector3.new(23.18409538269043, 20.20000648498535, 24.44658088684082)) 
+    ToggleRock('Jungle', 'jungle', state, Vector3.new(23.18409538269043, 20.20000648498535, 24.44658088684082), nil, false) 
 end):Set(false)
 
 MyFolder:AddSwitch('Muscle King Rock', function(state) 
-    ToggleRock('Muscle King Mountain', 'muscleking', state, Vector3.new(141.97381591796875, 123.69998931884766, 149.70497131347656)) 
+    ToggleRock('Muscle King', 'muscleking', state, Vector3.new(141.97381591796875, 123.69998931884766, 149.70497131347656), nil, false) 
 end):Set(false)
 
 MyFolder:AddSwitch('Rock Of Legends', function(state) 
-    ToggleRock('Rock Of Legends', 'legends', state, Vector3.new(106.04995727539063, 92.39998626708984, 111.82489013671875)) 
+    ToggleRock('Legends', 'legends', state, Vector3.new(106.04995727539063, 92.39998626708984, 111.82489013671875), nil, false) 
 end):Set(false)
 
 MyFolder:AddSwitch('Inferno Rock', function(state) 
-    ToggleRock('Inferno Rock', 'inferno', state, Vector3.new(50, 45, 50)) 
+    ToggleRock('Inferno', 'inferno', state, Vector3.new(50, 45, 50), nil, false) 
 end):Set(false)
 
 MyFolder:AddSwitch('Mystic Rock', function(state)
-    ToggleRock('Mystic Rock', 'mystic', state, Vector3.new(106.04995727539063, 92.39998626708984, 111.82489013671875))
+    ToggleRock('Mystic', 'mystic', state, Vector3.new(106.04995727539063, 92.39998626708984, 111.82489013671875), nil, false)
 end):Set(false)
 
 MyFolder:AddSwitch('Frozen Rock', function(state)
-    ToggleRock('Frozen Rock', 'frozen', state, Vector3.new(80.6851577758789, 70.2999496459961, 85.07884979248047))
+    ToggleRock('Frozen', 'frozen', state, Vector3.new(80.6851577758789, 70.2999496459961, 85.07884979248047), nil, false)
 end):Set(false)
 
 MyFolder:AddSwitch('Tiny Rock', function(state)
-    ToggleRock('Tiny Rock', 'tiny', state, Vector3.new(23.18409538269043, 20.20000648498535, 24.44658088684082))
+    ToggleRock('Tiny', 'tiny', state, Vector3.new(23.18409538269043, 20.20000648498535, 24.44658088684082), nil, false)
+end):Set(false)
+
+-- FIXED: Sinalo gamit ang 'Punching Rock' exact folder string match para hindi mag-overlap
+MyFolder:AddSwitch('Golden Rock', function(state)
+    local punchingSpawn = CFrame.new(-152.071701, 0.540015221, 422.783691, -1, 0, 0, 0, 1, 0, 0, 0, -1)
+    ToggleRock('Punching Rock', 'punching', state, Vector3.new(15, 15, 15), punchingSpawn, true)
 end):Set(false)
 
 _Rocks:AddLabel('Rocks V2:').TextSize = 22
-	local MyFolder = _Rocks:AddFolder("Auto Rocks V2")
+local MyFolder = _Rocks:AddFolder("Auto Rocks V2")
 
 -- Global trackers for state management
 _G.ActiveRockFarms = _G.ActiveRockFarms or {}
@@ -850,7 +896,7 @@ end
 -- ============================================================================
 -- CENTRALIZED ROCK FARM MANAGEMENT
 -- ============================================================================
-local function ToggleRock(machineFolderName, configName, enabled, originalSize)
+local function ToggleRock(machineFolderName, configName, enabled, originalSize, staticSpawnCFrame)
     _G[configName .. "autorock"] = enabled
     _G.ActiveRockFarms[configName] = enabled
     
@@ -866,7 +912,7 @@ local function ToggleRock(machineFolderName, configName, enabled, originalSize)
                 local _Rock = game.Workspace.machinesFolder:FindFirstChild(machineFolderName) and game.Workspace.machinesFolder[machineFolderName]:FindFirstChild('Rock')
                 
                 if _Rock and _LeftHand then
-                    _Rock.Size = Vector3.new(2, 1, 1)
+                    _Rock.Size = Vector3.new(12, 12, 12)
                     _Rock.Transparency = 1
                     _Rock.CanCollide = false
                     
@@ -883,7 +929,7 @@ local function ToggleRock(machineFolderName, configName, enabled, originalSize)
                         if effect then effect:Destroy() end
                     end
                     
-                    -- Snap rock directly to your left hand assembly
+                    -- Snap rock directly to your left hand assembly wherever you stand
                     _Rock.CFrame = _LeftHand.CFrame
                 else
                     warn(machineFolderName .. " or LeftHand structure missing.")
@@ -902,10 +948,12 @@ local function ToggleRock(machineFolderName, configName, enabled, originalSize)
                     end
                 end
                 _Rock.CanCollide = true
-                _Rock.Transparency = 0
+                _Rock.Transparency = 1
                 _Rock.Size = originalSize
                 if _Rock:FindFirstChild('originalPosition') then 
                     _Rock.CFrame = CFrame.new(_Rock.originalPosition.Value) 
+                elseif staticSpawnCFrame then
+                    _Rock.CFrame = staticSpawnCFrame
                 end
             else
                 warn(machineFolderName .. " not found to revert properties.")
@@ -944,6 +992,13 @@ end):Set(false)
 MyFolder:AddSwitch('Tiny Rock', function(state)
     ToggleRock('Tiny Rock', 'tiny', state, Vector3.new(23.18409538269043, 20.20000648498535, 24.44658088684082))
 end):Set(false)
+
+-- ADDED: Punching Rock isolated completely using its exact folder name structure
+MyFolder:AddSwitch('Golden Rock', function(state)
+    local punchingSpawn = CFrame.new(-152.071701, 0.540015221, 422.783691, -1, 0, 0, 0, 1, 0, 0, 0, -1)
+    ToggleRock('Punching Rock', 'punching', state, Vector3.new(15, 15, 15), punchingSpawn)
+end):Set(false)
+
 -- Create Tabs
 local _Rebirthing = window:AddTab('Rebirthing')
 
