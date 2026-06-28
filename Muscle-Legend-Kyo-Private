@@ -14,10 +14,12 @@ local window = library:AddWindow(windowTitle, {
 })
 
 task.spawn(function()
-    local imgui = game:GetService("CoreGui"):WaitForChild("imgui", 10)
+    -- 🔍 LOCATE ELERIUM V2 SCREEN (Targets common Elerium V2 names or falls back to 'imgui')
+    local imgui = game:GetService("CoreGui"):WaitForChild("Elerium", 5) or 
+                  game:GetService("CoreGui"):WaitForChild("Elerium Library", 5) or 
+                  game:GetService("CoreGui"):WaitForChild("imgui", 5)
+                  
     if not imgui then return end
-
-    local RunService = game:GetService("RunService")
 
     -- 🎨 EDITABLE COLORS
     local BACKGROUND_COLOR = Color3.fromRGB(100, 100, 100) 
@@ -26,11 +28,8 @@ task.spawn(function()
     -- 🔒 PERMANENTLY LOCKED COLORS
     local BAR_COLOR = Color3.fromRGB(0, 0, 0)        
 
-    -- Function to color elements cleanly without lag
+    -- Function para kulayan ang UI nang mabilis at walang lag
     local function colorAndLockElement(element)
-        if not element or not element.Parent then return end
-        
-        -- Instant exit if already processed (Prevents lag during frame updates)
         if element:GetAttribute("UI_Colored") then return end
 
         local nameLower = element.Name:lower()
@@ -57,18 +56,21 @@ task.spawn(function()
             return
         end
 
-        -- EXCLUSION CRITERIA: Skip toggles and indicators
+        -- EXCLUSION CRITERIA: Huwag galawin ang toggles at indicators
         if nameLower:match("indicator") or nameLower:match("checkmark") or element.Name == "Toggle_2" or nameLower:match("toggle") then
             return 
         end
 
+        -- Helper function: Binabago lang ang kulay kung kailangan (Anti-Lag)
         local function applyColor(property, targetColor)
-            if element[property] ~= targetColor then
-                element[property] = targetColor
-            end
+            pcall(function()
+                if element[property] ~= targetColor then
+                    element[property] = targetColor
+                end
+            end)
         end
 
-        -- 1. Color TABS
+        -- 1. Deteksyon at Pag-kulay sa TABS
         if nameLower:match("tab") and not nameLower:match("background") and not nameLower:match("frame") then
             if element:IsA("ImageLabel") or element:IsA("ImageButton") then
                 applyColor("ImageColor3", TAB_COLOR)
@@ -79,7 +81,7 @@ task.spawn(function()
             return 
         end
 
-        -- 2. Color BARS and LINES
+        -- 2. Pag-lock sa kulay ng BARS at LINES
         if nameLower:match("bar") or nameLower:match("line") then
             if element:IsA("ImageLabel") or element:IsA("ImageButton") then
                 applyColor("ImageColor3", BAR_COLOR)
@@ -90,9 +92,9 @@ task.spawn(function()
             return 
         end
 
-        -- 3. Color Main Backgrounds and Frames
+        -- 3. Kulay ng Main Backgrounds at Frames (Handles Elerium UI specific naming)
         if element:IsA("ImageLabel") or element:IsA("ImageButton") then
-            if nameLower:match("roundify") or nameLower:match("background") or nameLower:match("frame") then
+            if nameLower:match("roundify") or nameLower:match("background") or nameLower:match("frame") or nameLower:match("main") then
                 applyColor("ImageColor3", BACKGROUND_COLOR)
             else
                 if element:IsA("ImageButton") then
@@ -100,20 +102,19 @@ task.spawn(function()
                 end
             end
         elseif element:IsA("Frame") or element:IsA("TextButton") or element:IsA("TextBox") then
-            if nameLower:match("frame") or nameLower:match("background") then
+            if nameLower:match("frame") or nameLower:match("background") or nameLower:match("main") then
                 applyColor("BackgroundColor3", BACKGROUND_COLOR) 
             end
         end
         
-        -- 4. Color Texts (Forcing Elerium V2 theme color removal)
+        -- 4. Kulay ng mga Text (Inaalis ang original Elerium Blue theme color)
         if element:IsA("TextLabel") or element:IsA("TextButton") or element:IsA("TextBox") then
-            local txtColor = element.TextColor3
-            if txtColor == Color3.fromRGB(0, 0, 255) or (txtColor.B > 0.6 and txtColor.R < 0.4) or nameLower:match("tab") then
+            if element.TextColor3 == Color3.fromRGB(0, 0, 255) or (element.TextColor3.B > 0.6 and element.TextColor3.R < 0.4) or nameLower:match("tab") then
                 applyColor("TextColor3", Color3.fromRGB(255, 255, 255))
             end
         end
         
-        -- 5. SelectionBox / Highlight Coloring
+        -- 5. Kulay ng SelectionBox o Highlight
         if element:IsA("SelectionBox") or element:IsA("Highlight") then
             if element:IsA("SelectionBox") then
                 applyColor("Color3", BACKGROUND_COLOR)
@@ -126,17 +127,13 @@ task.spawn(function()
         element:SetAttribute("UI_Colored", true)
     end
 
-    -- Real-time rendering listener that bypasses Delta's event restrictions completely
-    local connection
-    connection = RunService.RenderStepped:Connect(function()
-        if not imgui or not imgui.Parent then 
-            connection:Disconnect() 
-            return 
-        end
-        
-        for _, element in ipairs(imgui:GetDescendants()) do
-            colorAndLockElement(element)
-        end
+    -- Run theme changes smoothly
+    for _, element in ipairs(imgui:GetDescendants()) do
+        task.defer(colorAndLockElement, element)
+    end
+
+    imgui.DescendantAdded:Connect(function(element)
+        task.defer(colorAndLockElement, element)
     end)
 end)
 
