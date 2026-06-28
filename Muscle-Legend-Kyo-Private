@@ -2889,7 +2889,7 @@ local Window = library:AddWindow(windowTitle, {
 ---------------------------------------------------------
 -- [SECTION 1: LOCAL PLAYER STATS TAB]
 ---------------------------------------------------------
-local TrackerTab = Window:AddTab("Stats 📊")
+local TrackerTab = window:AddTab("Stats 📊")
 TrackerTab:Show()
 
 local myStatNames = {"Strength", "Durability", "Agility", "Rebirths", "Kills", "Good Karma", "Evil Karma", "Gems"}
@@ -3001,7 +3001,7 @@ end)
 ---------------------------------------------------------
 -- [SECTION 2: SPY PLAYER STATS TAB]
 ---------------------------------------------------------
-local SpyTab = Window:AddTab("Spy Stats Player 👁️")
+local SpyTab = window:AddTab("Spy Stats Player 👁️")
 SpyTab:Show()
 
 local targetPlayer = nil 
