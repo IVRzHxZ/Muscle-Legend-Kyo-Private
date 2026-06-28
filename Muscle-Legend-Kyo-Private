@@ -2871,21 +2871,6 @@ end)
 		end
 	end);
 
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/IVRzHxZ/Kyo-UI-Library/refs/heads/main/Kyo-UI-LibraryxPrivate", true))()
- 
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-
--- Dynamically generate the window title with a welcome message
-local windowTitle = "Kyo-Cracked-Private | Welcome, " .. LocalPlayer.DisplayName
-
--- Fixed window configuration parameter pass
-local Window = library:AddWindow(windowTitle, {
-    main_color = Color3.fromRGB(41, 74, 122),
-    min_size = Vector2.new(600, 600),
-    can_resize = false
-})
-
 ---------------------------------------------------------
 -- [SECTION 1: LOCAL PLAYER STATS TAB]
 ---------------------------------------------------------
