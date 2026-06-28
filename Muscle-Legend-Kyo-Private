@@ -18,11 +18,11 @@ task.spawn(function()
     if not imgui then return end
 
     -- 🎨 EDITABLE COLORS
-    local BACKGROUND_COLOR = Color3.fromRGB(100, 100, 100) 
+    local BACKGROUND_COLOR = Color3.fromRGB(120, 120, 120) 
     local TAB_COLOR = Color3.fromRGB(0, 0, 0)     
 
     -- 🔒 PERMANENTLY LOCKED COLORS
-    local BAR_COLOR = Color3.fromRGB(0, 0, 0)        
+    local BAR_COLOR = Color3.fromRGB(20, 20, 20)        
 
     -- Function para kulayan ang UI nang mabilis at walang lag
     local function colorAndLockElement(element)
@@ -67,10 +67,16 @@ task.spawn(function()
             end
         end
 
-        -- 1. Deteksyon at Pag-kulay sa TABS
+        -- 1. Deteksyon at Pag-kulay sa TABS (NORMAL IMAGE COLOR FIX)
         if nameLower:match("tab") and not nameLower:match("background") and not nameLower:match("frame") then
             if element:IsA("ImageLabel") or element:IsA("ImageButton") then
-                applyColor("ImageColor3", TAB_COLOR)
+                -- Kung ang element ay may totoong asset image (icon), ibalik sa normal/default white tint
+                if element.Image ~= "" then
+                    applyColor("ImageColor3", Color3.fromRGB(100, 100, 100))
+                else
+                    -- Kung structural layout frame lang ito, tsaka lang gagawing black background
+                    applyColor("ImageColor3", TAB_COLOR)
+                end
             elseif element:IsA("Frame") or element:IsA("TextButton") or element:IsA("TextBox") then
                 applyColor("BackgroundColor3", TAB_COLOR)
             end
