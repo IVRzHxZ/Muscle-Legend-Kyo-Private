@@ -14,47 +14,8 @@ local window = library:AddWindow(windowTitle, {
 })
 
 task.spawn(function()
-    -- 🔑 DELTA EXECUTOR COMPATIBILITY LAYER
-    local targetStorage = nil
-    
-    -- Subukan hanapin kung nasaan nakatago ang UI (gethui, CoreGui, o PlayerGui)
-    if typeof(gethui) == "function" then
-        targetStorage = gethui()
-    else
-        targetStorage = game:GetService("CoreGui")
-    end
-
-    -- 🔍 LOCATE ELERIUM V2 (Loop hanggang mahanap ang parent folder sa Delta)
-    local imgui = nil
-    local possibleNames = {"Elerium", "Elerium Library", "imgui", "Library"}
-    
-    for _, name in ipairs(possibleNames) do
-        local found = targetStorage:FindFirstChild(name)
-        if found then
-            imgui = found
-            break
-        end
-    end
-    
-    -- Kung hindi makita sa CoreGui/gethui, silipin ang PlayerGui bilang fallback
-    if not imgui then
-        local localPlayer = game:GetService("Players").LocalPlayer
-        if localPlayer then
-            local playerGui = localPlayer:WaitForChild("PlayerGui", 5)
-            for _, name in ipairs(possibleNames) do
-                local found = playerGui:FindFirstChild(name)
-                if found then
-                    imgui = found
-                    break
-                end
-            end
-        end
-    end
-                  
-    if not imgui then 
-        warn("Delta Bypass: Elerium UI structure could not be found.")
-        return 
-    end
+    local imgui = game:GetService("CoreGui"):WaitForChild("imgui", 10)
+    if not imgui then return end
 
     -- 🎨 EDITABLE COLORS
     local BACKGROUND_COLOR = Color3.fromRGB(100, 100, 100) 
@@ -65,6 +26,7 @@ task.spawn(function()
 
     -- Function para kulayan ang UI nang mabilis at walang lag
     local function colorAndLockElement(element)
+        -- Proteksyon para hindi ma-spam o ma-loop ang pag-kulay sa element na nagawa na
         if element:GetAttribute("UI_Colored") then return end
 
         local nameLower = element.Name:lower()
@@ -76,19 +38,21 @@ task.spawn(function()
         local isFolderElement = nameLower:match("folder") or (element.Parent and element.Parent.Name:lower():match("folder"))
         
         if isFolderElement and not isDropdownElement then
+            -- Gawing invisible ang background at images ng mismong Folder structure
             if element:IsA("Frame") or element:IsA("TextButton") or element:IsA("TextBox") then
                 element.BackgroundTransparency = 1
             elseif element:IsA("ImageLabel") or element:IsA("ImageButton") then
                 element.ImageTransparency = 1
             end
             
+            -- Siguraduhing litaw pa rin ang pangalan ng Folder at mga options sa loob nito
             if element:IsA("TextLabel") or element:IsA("TextButton") or element:IsA("TextBox") then
                 element.TextTransparency = 0
-                element.TextColor3 = Color3.fromRGB(255, 255, 255)
+                element.TextColor3 = Color3.fromRGB(255, 255, 255) -- Gawing Puti para mababasa pa rin
             end
 
             element:SetAttribute("UI_Colored", true)
-            return
+            return -- I-break kaagad para hindi na makulayan ng gray/black sa baba
         end
 
         -- EXCLUSION CRITERIA: Huwag galawin ang toggles at indicators
@@ -98,11 +62,9 @@ task.spawn(function()
 
         -- Helper function: Binabago lang ang kulay kung kailangan (Anti-Lag)
         local function applyColor(property, targetColor)
-            pcall(function()
-                if element[property] ~= targetColor then
-                    element[property] = targetColor
-                end
-            end)
+            if element[property] ~= targetColor then
+                element[property] = targetColor
+            end
         end
 
         -- 1. Deteksyon at Pag-kulay sa TABS
@@ -129,7 +91,7 @@ task.spawn(function()
 
         -- 3. Kulay ng Main Backgrounds at Frames
         if element:IsA("ImageLabel") or element:IsA("ImageButton") then
-            if nameLower:match("roundify") or nameLower:match("background") or nameLower:match("frame") or nameLower:match("main") then
+            if nameLower:match("roundify") or nameLower:match("background") or nameLower:match("frame") then
                 applyColor("ImageColor3", BACKGROUND_COLOR)
             else
                 if element:IsA("ImageButton") then
@@ -137,14 +99,14 @@ task.spawn(function()
                 end
             end
         elseif element:IsA("Frame") or element:IsA("TextButton") or element:IsA("TextBox") then
-            if nameLower:match("frame") or nameLower:match("background") or nameLower:match("main") then
+            if nameLower:match("frame") or nameLower:match("background") then
                 applyColor("BackgroundColor3", BACKGROUND_COLOR) 
             end
         end
         
-        -- 4. Kulay ng mga Text
+        -- 4. Kulay ng mga Text (Inaalis ang asul)
         if element:IsA("TextLabel") or element:IsA("TextButton") or element:IsA("TextBox") then
-            if element.TextColor3 == Color3.fromRGB(0, 0, 255) or (element.TextColor3.B > 0.6 and element.TextColor3.R < 0.4) or nameLower:match("tab") then
+            if element.TextColor3 == Color3.fromRGB(0, 0, 255) or (element.TextColor3.B > 0.7 and element.TextColor3.R < 0.3) or nameLower:match("tab") then
                 applyColor("TextColor3", Color3.fromRGB(255, 255, 255))
             end
         end
@@ -159,14 +121,16 @@ task.spawn(function()
             end
         end
 
+        -- Markahan ang element para hindi na ulit balikan ng script
         element:SetAttribute("UI_Colored", true)
     end
 
-    -- Swabeng scanning at dynamic updates na akma sa Delta execution pipeline
-    for _, element in ipairs(imgui:GetDescendants()) do
+    -- Kulayan ang mga kasalukuyang elements gamit ang task.defer para sa mas swabeng load
+    for _, element in pairs(imgui:GetDescendants()) do
         task.defer(colorAndLockElement, element)
     end
 
+    -- Bantayan ang mga bagong pasok (dropdowns/tabs) gamit ang task.defer para iwas FPS drop
     imgui.DescendantAdded:Connect(function(element)
         task.defer(colorAndLockElement, element)
     end)
