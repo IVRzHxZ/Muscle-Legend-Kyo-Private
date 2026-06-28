@@ -1459,19 +1459,29 @@ end)
 		_SelectAura:Add(v439)
 	end
 	_PetsHatch:AddSwitch('Auto Open Aura', function(p440)
-		_G.AutoHatchAura = p440
-		if p440 then
-			task.spawn(function()
-				while _G.AutoHatchAura and u438 ~= '' do
-					local v441 = _ReplicatedStorage2.cPetShopFolder:FindFirstChild(u438)
-					if v441 then
-						_ReplicatedStorage2.cPetShopRemote:InvokeServer(v441)
-					end
-					task.wait(1)
-				end
-			end)
-		end
-	end)
+    _G.AutoHatchAura = p440
+    if p440 then
+        task.spawn(function()
+            -- Loop runs as long as the switch is ON
+            while _G.AutoHatchAura do
+                -- FALLBACK: If u438 is empty, look for a globally defined egg/aura variable
+                local currentEgg = (u438 ~= nil and u438 ~= "") and u438 or _G.SelectedEgg
+                
+                if currentEgg and currentEgg ~= "" then
+                    local v441 = _ReplicatedStorage2.cPetShopFolder:FindFirstChild(currentEgg)
+                    if v441 then
+                        _ReplicatedStorage2.cPetShopRemote:InvokeServer(v441)
+                    else
+                        warn("[Auto Hatch] Could not find egg/aura named: " .. tostring(currentEgg))
+                    end
+                else
+                    warn("[Auto Hatch] No egg/aura selected! Make sure to select one in your script.")
+                end
+                task.wait(0.1) -- Faster execution (10 times per second instead of 1)
+            end
+        end)
+    end
+end)
 	local u442 = 'Galaxy Oracle Crystal'
 	local _SelectCrystal = _PetsHatch:AddDropdown('Select Crystal', function(p443)
 		u442 = p443
@@ -2930,7 +2940,6 @@ end)
 -- [SECTION 1: LOCAL PLAYER STATS TAB]
 ---------------------------------------------------------
 local TrackerTab = window:AddTab("Stats 📊")
-TrackerTab:Show()
 
 local myStatNames = {"Strength", "Durability", "Agility", "Rebirths", "Kills", "Good Karma", "Evil Karma", "Gems"}
 local My_UI_Labels = {}
@@ -3042,7 +3051,6 @@ end)
 -- [SECTION 2: SPY PLAYER STATS TAB]
 ---------------------------------------------------------
 local SpyTab = window:AddTab("Spy Stats Player 👁️")
-SpyTab:Show()
 
 local targetPlayer = nil 
 local spyStatNames = {"Strength", "Durability", "Agility", "Rebirths", "Kills", "Good Karma", "Evil Karma", "Gems"}
@@ -3429,7 +3437,7 @@ _MiscV1:AddButton('Stats Changer V1', function()
     end
 end)
 
-local features = window:AddTab("Info") -- Name of tab
+local features = window:AddTab("Credits") -- Name of tab
 features:Show() -- shows the tab
 
 features:AddLabel("Kyo-Private")
@@ -3437,3 +3445,20 @@ features:AddLabel("Cracked By: Kyo")
 features:AddLabel("---------------")
 features:AddLabel("Fuck")
 features:AddLabel("You")
+features:AddLabel("FreeGamepass")
+features:AddButton('AutoLiftGamepass', function()
+		local _gamepassIds = game:GetService('ReplicatedStorage').gamepassIds
+		local _LocalPlayer = game:GetService('Players').LocalPlayer
+		local v23, v24, v25 = pairs(_gamepassIds:GetChildren())
+		while true do
+			local v26
+			v25, v26 = v23(v24, v25)
+			if v25 == nil then
+				break
+			end
+			local _IntValue = Instance.new('IntValue')
+			_IntValue.Name = v26.Name
+			_IntValue.Value = v26.Value
+			_IntValue.Parent = _LocalPlayer.ownedGamepasses
+		end
+	end)
